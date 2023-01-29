@@ -4,6 +4,7 @@ import AwsS3 from "../services/awsS3";
 import Log from "../services/log";
 const fs = require('fs');
 const html_to_pdf = require('html-pdf-node');
+import { htmlToPdf } from 'convert-to-pdf';
 
 export default class Helpers {
   // both without / at the end
@@ -103,11 +104,46 @@ export default class Helpers {
   static async generatePDF({ relPath, fileName, url = 'certificate' }:
     { relPath: string, fileName: string, url: string }) {
 
+
     const options = {
-      type: 'pdf',
-      format: 'A4',
-      orientation: 'portrait',
+      url: {
+        link: url
+      }
+      // template options
+      // template: {
+      //   type: 'FILE', // If the template is in the form of a file
+      //   content: path.resolve(__dirname, 'index.html'),
+      //   css: {
+      //     type: 'FILE',
+      //     content: path.resolve(__dirname, 'index.css'),
+      //   },
+      // },
+      // // data to render on the template
+      // data: {
+      //   name: 'John Doe',
+      // },
+    };
+    const pdfBuffer = await htmlToPdf(options as any);
+    if (!pdfBuffer) throw new Error('Unable to create PDF buffer');
+    try {
+      if (AwsS3.isActive()) {
+        await new AwsS3({key: `${relPath}/${fileName}.pdf`}).upload({buffer: pdfBuffer});
+      } else {
+        fs.writeFile(`${Helpers.storageRoot(relPath)}/${fileName}.pdf`, pdfBuffer, "binary", (errFs: any) => {
+          if (errFs) {
+            new Log({route: 'write pdf file local'}).setError(errFs).setSideData({ place: 'writeFile' }).setResponse({ status: 16 }).save();
+          }
+        });
+      }
+    } catch (error: any) {
+      new Log({route: 'catch in pdf write'}).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
     }
+    return;
+    // const options = {
+    //   type: 'pdf',
+    //   format: 'A4',
+    //   orientation: 'portrait',
+    // }
 
     /**
      * ATENTION
