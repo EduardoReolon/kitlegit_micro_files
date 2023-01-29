@@ -31,6 +31,10 @@ async function loadEnv() {
       env[pairs[0]] = pairs[1];
     });
   } catch (error) {}
+
+  Object.keys(env).forEach((key) => {
+    process.env[key] = env[key];
+  });
 }
 
 export {env, loadEnv, setEnvDir};

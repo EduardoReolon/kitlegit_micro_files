@@ -120,24 +120,28 @@ export default class Helpers {
      * https://www.edivaldobrito.com.br/como-instalar-o-navegador-chromium-no-ubuntu-20-04-deb/
      */
     await new Promise(async (resolve, reject) => {
-      html_to_pdf.generatePdf({ url }, options).then(async (buffer: Buffer) => {
-        try {
-          if (AwsS3.isActive()) {
-            await new AwsS3({key: `${relPath}/${fileName}.pdf`}).upload({buffer});
-            resolve('');
-          } else {
-            fs.writeFile(`${Helpers.storageRoot(relPath)}/${fileName}.pdf`, buffer, "binary", (errFs: any) => {
-              if (errFs) {
-                new Log({route: 'write pdf file local'}).setError(errFs).setSideData({ place: 'writeFile' }).setResponse({ status: 16 }).save();
-                reject('Error writing file');
-              } else resolve('');
-            });
+      try {
+        html_to_pdf.generatePdf({ url }, options).then(async (buffer: Buffer) => {
+          try {
+            if (AwsS3.isActive()) {
+              await new AwsS3({key: `${relPath}/${fileName}.pdf`}).upload({buffer});
+              resolve('');
+            } else {
+              fs.writeFile(`${Helpers.storageRoot(relPath)}/${fileName}.pdf`, buffer, "binary", (errFs: any) => {
+                if (errFs) {
+                  new Log({route: 'write pdf file local'}).setError(errFs).setSideData({ place: 'writeFile' }).setResponse({ status: 16 }).save();
+                  reject('Error writing file');
+                } else resolve('');
+              });
+            }
+          } catch (error: any) {
+            new Log({route: 'catch in pdf write'}).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
+            reject('Error generating PDF');
           }
-        } catch (error: any) {
-          new Log({route: 'catch in pdf write'}).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
-          reject('Error generating PDF');
-        }
-      });
+        });
+      } catch (error) {
+        new Log({route: 'catch in generate PDF'}).setError(error as any).setSideData({ place: 'catch generate PDF' }).setResponse({ status: 15 }).save()
+      }
     });
   }
 }
