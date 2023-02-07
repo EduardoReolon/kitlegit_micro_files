@@ -3,8 +3,7 @@ import { env } from "../../kernel/env";
 import AwsS3 from "../services/awsS3";
 import Log from "../services/log";
 const fs = require('fs');
-const html_to_pdf = require('html-pdf-node');
-import { htmlToPdf } from 'convert-to-pdf';
+import { htmlToPdf } from 'convert-to-pdf'; // https://github.com/sankalpkataria/to-pdf
 
 export default class Helpers {
   // both without / at the end
@@ -101,9 +100,26 @@ export default class Helpers {
     await Helpers.saveImgJimp({relPath: resizedRelPath, file: original});
   }
 
+  static async fileToDataURL({ dataType = 'image/png', relPath }: { dataType?: string, relPath?: string }) {
+    if (!relPath) return '';
+    const qrCode = await Helpers.getFileBuffer(relPath);
+    if (typeof qrCode === 'boolean') return '';
+    return `data:${dataType};base64,${Buffer.from(qrCode).toString('base64')}`;
+  }
+
   static async generatePDF({ relPath, fileName, url = 'certificate' }:
     { relPath: string, fileName: string, url: string }) {
 
+    /**
+     * ATENTION
+     * PUPPETEER may throw an error due to chromium
+     * add these two lines in .env file
+     * PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+     * PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+     *
+     * to install chromium on linux ubuntu
+     * https://www.edivaldobrito.com.br/como-instalar-o-navegador-chromium-no-ubuntu-20-04-deb/
+     */
 
     const options = {
       url: {
@@ -117,6 +133,7 @@ export default class Helpers {
       new Log({route: 'creating pdf buffer'}).setError(error).setResponse({ status: 11 }).save();
       throw new Error('error creating pdf buffer');
     }
+
     if (!pdfBuffer) throw new Error('Unable to create PDF buffer');
     try {
       if (AwsS3.isActive()) {
@@ -131,46 +148,5 @@ export default class Helpers {
     } catch (error: any) {
       new Log({route: 'catch in pdf write'}).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
     }
-    return;
-    // const options = {
-    //   type: 'pdf',
-    //   format: 'A4',
-    //   orientation: 'portrait',
-    // }
-
-    /**
-     * ATENTION
-     * PUPPETEER may throw an error due to chromium
-     * add these two lines in .env file
-     * PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-     * PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-     *
-     * to install chromium on linux ubuntu
-     * https://www.edivaldobrito.com.br/como-instalar-o-navegador-chromium-no-ubuntu-20-04-deb/
-     */
-    // await new Promise(async (resolve, reject) => {
-    //   try {
-    //     html_to_pdf.generatePdf({ url }, options).then(async (buffer: Buffer) => {
-    //       try {
-    //         if (AwsS3.isActive()) {
-    //           await new AwsS3({key: `${relPath}/${fileName}.pdf`}).upload({buffer});
-    //           resolve('');
-    //         } else {
-    //           fs.writeFile(`${Helpers.storageRoot(relPath)}/${fileName}.pdf`, buffer, "binary", (errFs: any) => {
-    //             if (errFs) {
-    //               new Log({route: 'write pdf file local'}).setError(errFs).setSideData({ place: 'writeFile' }).setResponse({ status: 16 }).save();
-    //               reject('Error writing file');
-    //             } else resolve('');
-    //           });
-    //         }
-    //       } catch (error: any) {
-    //         new Log({route: 'catch in pdf write'}).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
-    //         reject('Error generating PDF');
-    //       }
-    //     });
-    //   } catch (error) {
-    //     new Log({route: 'catch in generate PDF'}).setError(error as any).setSideData({ place: 'catch generate PDF' }).setResponse({ status: 15 }).save()
-    //   }
-    // });
   }
 }

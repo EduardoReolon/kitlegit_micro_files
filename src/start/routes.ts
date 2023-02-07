@@ -14,8 +14,14 @@ import Route from "../kernel/routehandler";
 
 Route.group([
   Route.post('', 'QrcodeController.store'),
+  Route.post('fromimg', 'QrcodeController.getFromImg'),
 ])
   .prefix('api/v1/qrcode').middleware('AwsS3Settings')
+
+Route.group([
+  Route.post('fromimg', 'BarcodeController.getFromImg'),
+])
+  .prefix('api/v1/barcode').middleware('AwsS3Settings')
 
 Route.group([
   Route.post('resize', 'ImgController.resize'),

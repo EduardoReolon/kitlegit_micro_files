@@ -11,4 +11,10 @@ export default class {
 
     response.status(200);
   }
+
+  public async getFromImg({request, response}: HttpContextContract) {
+    const {relPath} = request.all();
+
+    response.status(200).send(await QRCode.getFromPhoto({relPath}));
+  }
 }
