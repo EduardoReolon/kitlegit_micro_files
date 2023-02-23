@@ -66,6 +66,7 @@ export default class Helpers {
       w = height;
       h = height;
     }
+    y = 0; // now y always starts in 0
     img.crop(x, y, w, h);
   }
 
