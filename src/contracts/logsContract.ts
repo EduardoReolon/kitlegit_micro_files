@@ -7,6 +7,8 @@ export interface logRecordContract {
   error_message?: string
   error_stack?: string
   time?: number
+  memory_start?: number
+  memory_end?: number
 
   // json fields
   request?: string

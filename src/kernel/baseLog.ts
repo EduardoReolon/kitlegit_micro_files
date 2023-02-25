@@ -15,6 +15,7 @@ export default class BaseLog implements logContract {
     this.log.route = route;
     this.log.method = method;
     this.timeStart = Date.now();
+    this.log.memory_start = Math.round(process.memoryUsage().rss / 1048576);
   }
 
   setRequest({request, params}: {request: {[key: string]: any}, params: {[key: string]: string | string[]}}) {
@@ -84,6 +85,8 @@ export default class BaseLog implements logContract {
     this.log.side_data = JSON.stringify(this.sideData);
 
     this.log.time = Date.now() - this.timeStart;
+
+    this.log.memory_end = Math.round(process.memoryUsage().rss / 1048576);
 
     return this;
   }
