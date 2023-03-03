@@ -6,7 +6,7 @@ export default class {
   public async resize({request, response}: HttpContextContract) {
     const requestAll = request.all();
 
-    await Helpers.imgResize(requestAll as any);
+    await Helpers.imgResizeSharp(requestAll as any);
 
     response.status(200);
   }
@@ -14,7 +14,7 @@ export default class {
   public async watermark({request, response}: HttpContextContract) {
     const requestAll = request.all();
 
-    await Watermark.addWatermark(requestAll.relPath, requestAll.watermarkRelPath, requestAll.options, requestAll.optionsText);
+    await Watermark.addWatermark(requestAll.relPath, requestAll.watermarkRelPath, requestAll.certificateCode);
 
     response.status(200);
   }

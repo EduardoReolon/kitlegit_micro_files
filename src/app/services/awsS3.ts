@@ -4,6 +4,7 @@ import {
   HeadObjectCommand, HeadObjectCommandInput, HeadObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { env } from '../../kernel/env';
+import { awsS3StorageClasses } from '../interfaces';
 import Logs from './log';
 const fs = require('fs');
 
@@ -113,8 +114,7 @@ export default class AwsS3 {
 
   async upload({filePath, storageClass = 'STANDARD', buffer}: {
     filePath?: string,
-    storageClass?: 'DEEP_ARCHIVE' | 'GLACIER' | 'GLACIER_IR' | 'INTELLIGENT_TIERING' | 'ONEZONE_IA' |
-      'OUTPOSTS' | 'REDUCED_REDUNDANCY' | 'STANDARD' | 'STANDARD_IA',
+    storageClass?: awsS3StorageClasses,
     buffer?: Buffer,
   }) {
     try {

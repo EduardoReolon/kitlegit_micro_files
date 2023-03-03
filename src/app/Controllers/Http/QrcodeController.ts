@@ -13,8 +13,8 @@ export default class {
   }
 
   public async getFromImg({request, response}: HttpContextContract) {
-    const {relPath} = request.all();
+    const {relPath, maxResolution} = request.all();
 
-    response.status(200).send(await QRCode.getFromPhoto({relPath}));
+    response.status(200).send(await QRCode.getFromPhoto({relPath, maxResolution}));
   }
 }

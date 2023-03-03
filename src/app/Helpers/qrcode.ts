@@ -42,12 +42,24 @@ export default class QRCode {
     return response;
   }
 
-  static async getFromPhoto({relPath}: {relPath: string}): Promise<string[]> {
+  static async getFromPhoto({relPath, maxResolution = 2048}: {relPath: string, maxResolution?: number}): Promise<string[]> {
     const values: string[] = [];
 
-    const jimp = await Helpers.readImgJimp({relPath});
+    const sharp = await Helpers.readImgSharp({relPath});
+    const sharpMeta = await sharp.metadata();
+    const width = sharpMeta.width || 1000;
+    const height = sharpMeta.height || 1000;
+    if (width > maxResolution || height > maxResolution) {
+      if (width > height) sharp.resize(maxResolution, Math.round(height / width * maxResolution));
+      else sharp.resize(Math.round(width / height * maxResolution), maxResolution);
+    }
 
-    const code = jsQR(jimp.bitmap.data, jimp.getWidth(), jimp.getHeight());
+    const {data, info} = await sharp
+      .ensureAlpha()
+      .raw()
+      .toBuffer({resolveWithObject: true});
+
+    const code = jsQR(new Uint8ClampedArray(data.buffer), info.width, info.height);
 
     if (code) {
       values.push(code.data);
