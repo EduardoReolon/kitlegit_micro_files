@@ -42,7 +42,7 @@ export default class QRCode {
     return response;
   }
 
-  static async getFromPhoto({relPath, maxResolution = 2048}: {relPath: string, maxResolution?: number}): Promise<string[]> {
+  static async getFromPhoto({relPath, maxResolution = 768}: {relPath: string, maxResolution?: number}): Promise<string[]> {
     const values: string[] = [];
 
     const sharp = await Helpers.readImgSharp({relPath});

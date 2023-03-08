@@ -81,11 +81,19 @@ export default class Helpers {
     img.resize(Math.round(widthNew));
   }
 
-  static async imgResizeSharp({ relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY' }: { relPath: string, resizedRelPath?: string, maxResolution?: number, storageClass?: awsS3StorageClasses }) {
+  static async imgResizeSharp({ relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY', rotate }: { relPath: string, resizedRelPath?: string, maxResolution?: number, storageClass?: awsS3StorageClasses, rotate?: boolean }) {
     if (!resizedRelPath) resizedRelPath = relPath;
 
     try {
-      const original = await Helpers.imgCropSharp({ img: await Helpers.readImgSharp({ relPath }) });
+      let img = await Helpers.readImgSharp({ relPath });
+      if (rotate) {
+        const { width, height } = await img.metadata();
+        if ((width || 0) > (height || 0)) {
+          img = sharp(await img.toBuffer());
+          img = sharp(await img.rotate(90).toBuffer());
+        }
+      }
+      const original = await Helpers.imgCropSharp({ img });
       await Helpers.imgRedizeSharpCore({ img: original, maxResolution });
       await Helpers.saveImgSharp({ relPath: resizedRelPath, file: original, storageClass });
     } catch (error) {
