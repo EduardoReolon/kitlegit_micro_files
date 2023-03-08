@@ -87,9 +87,9 @@ export default class Helpers {
     try {
       let img = await Helpers.readImgSharp({ relPath });
       if (rotate) {
+        img = sharp(await img.toBuffer());
         const { width, height } = await img.metadata();
         if ((width || 0) > (height || 0)) {
-          img = sharp(await img.toBuffer());
           img = sharp(await img.rotate(90).toBuffer());
         }
       }
