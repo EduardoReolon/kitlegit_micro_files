@@ -10,6 +10,7 @@ export default class ProcessKill implements middlewareContract {
   static startKill() {
     ProcessKill.toKill = true
     new Log({route: 'processKill middleware - processAdd'}).setSideData({processesCount: this.processesCount}).save();
+    ProcessKill.processesRemove(0);
   }
 
   processesAdd() {
@@ -20,8 +21,8 @@ export default class ProcessKill implements middlewareContract {
     ProcessKill.processesCount += 1;
   }
 
-  processesRemove() {
-    ProcessKill.processesCount -= 1;
+  static processesRemove(value: number = 1) {
+    ProcessKill.processesCount -= value;
     if (ProcessKill.toKill && ProcessKill.processesCount < 1) {
       new Log({route: 'processKill middleware - processRemove'}).save();
       process.exit(0);
@@ -32,9 +33,9 @@ export default class ProcessKill implements middlewareContract {
     this.processesAdd();
     try {
       await next();
-      this.processesRemove();
+      ProcessKill.processesRemove();
     } catch (error) {
-      this.processesRemove();
+      ProcessKill.processesRemove();
       throw error;
     }
   }
