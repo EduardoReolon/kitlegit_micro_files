@@ -2,6 +2,7 @@ import { HttpContextContract, middlewareContract } from "../../contracts/request
 import AwsS3 from "../services/awsS3";
 
 export default class AwsS3SettingsMiddleware implements middlewareContract {
+  priority = 6;
   isGlobal: boolean = false;
 
   public async handle({request}: HttpContextContract, next: () => Promise<void>) {
