@@ -1,4 +1,4 @@
-{
+module.exports = {
     apps: [{
         name: "micro",
         script: "build/index.js",// name of the startup file
