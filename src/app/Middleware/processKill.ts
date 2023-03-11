@@ -15,7 +15,8 @@ export default class ProcessKill implements middlewareContract {
 
   processesAdd() {
     if (ProcessKill.toKill) {
-      throw new Error('Server is about to close');
+      // disabled for now, enable when we have more servers
+      // throw new Error('Server is about to restart');
     }
 
     ProcessKill.processesCount += 1;
