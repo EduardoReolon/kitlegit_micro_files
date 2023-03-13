@@ -8,15 +8,13 @@ export default class ProcessKill implements middlewareContract {
   static processesCount: number = 0;
 
   static startKill() {
-    ProcessKill.toKill = true
-    new Log({route: 'processKill middleware - processAdd'}).setSideData({processesCount: this.processesCount}).save();
+    new Log({route: 'processKill middleware - processAdd'}).setSideData({processesCount: ProcessKill.processesCount}).save();
     ProcessKill.processesRemove(0);
   }
 
   processesAdd() {
     if (ProcessKill.toKill) {
-      // disabled for now, enable when we have more servers
-      // throw new Error('Server is about to restart');
+      throw new Error('Server is about to restart');
     }
 
     ProcessKill.processesCount += 1;
@@ -25,8 +23,9 @@ export default class ProcessKill implements middlewareContract {
   static processesRemove(value: number = 1) {
     ProcessKill.processesCount -= value;
     if (ProcessKill.toKill && ProcessKill.processesCount < 1) {
+      ProcessKill.toKill = true
       new Log({route: 'processKill middleware - processRemove'}).save();
-      process.exit(0);
+      setTimeout(() => process.exit(0), 200);
     }
   }
 
