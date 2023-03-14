@@ -8,6 +8,7 @@ module.exports = {
         env           : { 'LD_PRELOAD': '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1', 'NODE_ENV': 'production' },
         env_production: { 'LD_PRELOAD': '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1', 'NODE_ENV': 'production' },
         wait_ready    : true,
+        watch: ["build"],
         instances: 3,          // number of workers you want to run
         // "env": {
         //     "PORT": "9090" // the port on which the app should listen
