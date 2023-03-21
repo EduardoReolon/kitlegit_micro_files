@@ -29,6 +29,10 @@ export default class Helpers {
     }
   }
 
+  static sharpFromBuffer(buffer: Buffer) {
+    return sharp(buffer);
+  }
+
   static async getFileBuffer(relPath: string): Promise<Buffer | boolean> {
     if (AwsS3.isActive()) {
       const buffer = await new AwsS3({ key: relPath }).download({ type: 'buffer' });
