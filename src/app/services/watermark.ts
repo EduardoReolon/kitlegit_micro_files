@@ -10,7 +10,7 @@ export default class Watermark {
         .composite([
           {
             // transparency
-            input: Buffer.from([0,0,0,64]),
+            input: Buffer.from([0,0,0,128]),
             raw: {
               width: 1,
               height: 1,
