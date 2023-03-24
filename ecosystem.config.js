@@ -4,10 +4,10 @@ module.exports = {
         script: "build/index.js",// name of the startup file
         exec_mode: "cluster",  // to turn on cluster mode; defaults to 'fork' mode
         max_memory_restart: "250M",
-        kill_timeout : 600000, // 10 minutes
+        kill_timeout : 5000, // 10 minutes
         // env           : { 'LD_PRELOAD': '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1', 'NODE_ENV': 'production' },
         // env_production: { 'LD_PRELOAD': '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1', 'NODE_ENV': 'production' },
-        wait_ready    : true,
+        // wait_ready    : true,
         // watch: ["build"],
         instances: 3,          // number of workers you want to run
         // "env": {
