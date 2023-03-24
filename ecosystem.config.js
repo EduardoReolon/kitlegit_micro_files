@@ -2,7 +2,7 @@ module.exports = {
     apps: [{
         name: "micro",
         script: "build/index.js",// name of the startup file
-        exec_mode: "cluster",  // to turn on cluster mode; defaults to 'fork' mode
+        exec_mode: "fork",  // to turn on cluster mode; defaults to 'fork' mode
         max_memory_restart: '250M',
         kill_timeout : 600000, // 10 minutes
         // env           : { 'LD_PRELOAD': '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1', 'NODE_ENV': 'production' },
