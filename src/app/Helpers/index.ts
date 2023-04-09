@@ -85,16 +85,29 @@ export default class Helpers {
     img.resize(Math.round(widthNew));
   }
 
-  static async imgResizeSharp({ relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY', rotate }: { relPath: string, resizedRelPath?: string, maxResolution?: number, storageClass?: awsS3StorageClasses, rotate?: boolean }) {
+  static async imgResizeSharp({
+    relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY', rotate, orientation,
+  }: {
+    relPath: string, resizedRelPath?: string, maxResolution?: number, storageClass?: awsS3StorageClasses, rotate?: boolean,
+    orientation: 'portraitUp' | 'landscapeRight' | 'landscapeLeft' | 'portraitDown',
+  }) {
     if (!resizedRelPath) resizedRelPath = relPath;
 
     try {
       let img = await Helpers.readImgSharp({ relPath });
       if (rotate) {
         img = sharp(await img.toBuffer());
-        const { width, height } = await img.metadata();
-        if ((width || 0) > (height || 0)) {
+        if (orientation === 'landscapeLeft') {
           img = sharp(await img.rotate(90).toBuffer());
+        } else if (orientation === 'landscapeRight') {
+          img = sharp(await img.rotate(270).toBuffer());
+        } else if (orientation === 'portraitDown') {
+          img = sharp(await img.rotate(180).toBuffer());
+        } else {
+          const { width, height } = await img.metadata();
+          if ((width || 0) > (height || 0)) {
+            img = sharp(await img.rotate(90).toBuffer());
+          }
         }
       }
       const original = await Helpers.imgCropSharp({ img });
