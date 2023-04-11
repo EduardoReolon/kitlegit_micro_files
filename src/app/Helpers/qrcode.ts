@@ -2,6 +2,7 @@ import Helpers from ".";
 const jsQR = require("jsqr"); // https://github.com/cozmo/jsQR
 import AwsS3 from "../services/awsS3";
 const QRCodeWriter = require('qrcode') // https://github.com/soldair/node-qrcode
+import Jimp from 'jimp';
 
 export default class QRCode {
   static async toFile({
@@ -45,25 +46,49 @@ export default class QRCode {
   static async getFromPhoto({relPath, maxResolution = 768}: {relPath: string, maxResolution?: number}): Promise<string[]> {
     const values: string[] = [];
 
-    const sharp = await Helpers.readImgSharp({relPath});
-    const sharpMeta = await sharp.metadata();
-    const width = sharpMeta.width || 1000;
-    const height = sharpMeta.height || 1000;
-    if (width > maxResolution || height > maxResolution) {
-      if (width > height) sharp.resize(maxResolution, Math.round(height / width * maxResolution));
-      else sharp.resize(Math.round(width / height * maxResolution), maxResolution);
+    // const sharp = await Helpers.readImgSharp({relPath});
+    // const sharpMeta = await sharp.metadata();
+    // const width = sharpMeta.width || 1000;
+    // const height = sharpMeta.height || 1000;
+    // if (width > maxResolution || height > maxResolution) {
+    //   if (width > height) sharp.resize(maxResolution, Math.round(height / width * maxResolution));
+    //   else sharp.resize(Math.round(width / height * maxResolution), maxResolution);
+    // }
+
+    // const {data, info} = await sharp
+    //   .ensureAlpha()
+    //   .raw()
+    //   .toBuffer({resolveWithObject: true});
+
+    // const code = jsQR(new Uint8ClampedArray(data.buffer), info.width, info.height);
+
+    // if (code) {
+    //   values.push(code.data);
+    // }
+
+    const jimpOriginal = await Helpers.readImgJimp({relPath});
+
+    const getCropped = async (type: 'center', scale: number) => {
+      const jimp = await Jimp.read(jimpOriginal);
+      let w = 1000, h = 1000, x = 0, y = 0;
+      if (type === 'center') {
+        w = Math.round(jimp.getWidth() / scale);
+        h = Math.round(jimp.getHeight() / scale);
+        x = Math.round((jimp.getWidth() - w) / 2);
+        y = Math.round((jimp.getHeight() - h) / 2);
+      }
+      jimp.crop(x, y, w, h);
+
+      const code = jsQR(jimp.bitmap.data as any, w, h);
+
+      if (code) {
+        values.push(code.data);
+      }
     }
 
-    const {data, info} = await sharp
-      .ensureAlpha()
-      .raw()
-      .toBuffer({resolveWithObject: true});
-
-    const code = jsQR(new Uint8ClampedArray(data.buffer), info.width, info.height);
-
-    if (code) {
-      values.push(code.data);
-    }
+    await getCropped('center', 2);
+    if (!values.length) await getCropped('center', 1.5);
+    if (!values.length) await getCropped('center', 1);
 
     return values;
   }

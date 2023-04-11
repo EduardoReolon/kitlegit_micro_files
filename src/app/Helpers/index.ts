@@ -5,6 +5,7 @@ const fs = require('fs');
 import { htmlToPdf } from 'convert-to-pdf'; // https://github.com/sankalpkataria/to-pdf
 import sharp from "sharp";
 import { awsS3StorageClasses } from "../interfaces";
+import Jimp from 'jimp';
 
 export default class Helpers {
   // both without / at the end
@@ -16,6 +17,30 @@ export default class Helpers {
     const end = path ? `/${path.replace(/^\/|\/$/g, '')}` : '';
     if (env.storage_root) return `${env.storage_root}${end}`;
     return Helpers.appRoot(`storage${end}`);
+  }
+
+  static async readImgJimp({ relPath }: { relPath: string }) {
+    if (AwsS3.isActive()) {
+      const file = await new AwsS3({ key: relPath }).download({ type: 'buffer' });
+      if (!file) throw 'Error downloading file from AWS S3';
+
+      try {
+        const jo = require('jpeg-autorotate');
+        const { buffer } = await jo.rotate(file, { quality: 30 });
+        return await Jimp.read(buffer);
+      } catch (error) {
+        return await Jimp.read(file as Buffer);
+      }
+    } else {
+      try {
+        const fileIn = fs.readFileSync(relPath);
+        const jo = require('jpeg-autorotate');
+        const { buffer } = await jo.rotate(fileIn, { quality: 30 });
+        return await Jimp.read(buffer);
+      } catch (error) {
+        return await Jimp.read(relPath);
+      }
+    }
   }
 
   static async readImgSharp({ relPath }: { relPath: string }) {
