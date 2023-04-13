@@ -68,7 +68,7 @@ export default class QRCode {
 
     const jimpOriginal = await Helpers.readImgJimp({relPath});
 
-    const getCropped = async (type: 'center', scale: number) => {
+    const getCropped = async (type: 'center' | 'center strip', scale: number, posMultY: number = 0) => {
       const jimp = await Jimp.read(jimpOriginal);
       let w = 1000, h = 1000, x = 0, y = 0;
       if (type === 'center') {
@@ -76,6 +76,11 @@ export default class QRCode {
         h = Math.round(jimp.getHeight() / scale);
         x = Math.round((jimp.getWidth() - w) / 2);
         y = Math.round((jimp.getHeight() - h) / 2);
+      } else if (type === 'center strip') {
+        w = Math.floor(jimp.getWidth() / scale);
+        h = Math.floor(jimp.getHeight() / scale);
+        x = Math.floor((jimp.getWidth() - w) / 2);
+        y = h * posMultY;
       }
       jimp.crop(x, y, w, h);
 
@@ -89,6 +94,11 @@ export default class QRCode {
     await getCropped('center', 2);
     if (!values.length) await getCropped('center', 1.5);
     if (!values.length) await getCropped('center', 1);
+    if (!values.length) await getCropped('center strip', 2, 0);
+    if (!values.length) await getCropped('center strip', 2, 1);
+    if (!values.length) await getCropped('center strip', 3, 0);
+    if (!values.length) await getCropped('center strip', 3, 1);
+    if (!values.length) await getCropped('center strip', 3, 2);
 
     return values;
   }
