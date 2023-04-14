@@ -84,11 +84,19 @@ export default class QRCode {
       }
       jimp.crop(x, y, w, h);
 
-      const code = jsQR(jimp.bitmap.data as any, w, h);
+      const getResized = async (size: number) => {
+        jimp.resize(size, Jimp.AUTO);
+        const code = jsQR(jimp.bitmap.data as any, jimp.getWidth(), jimp.getHeight());
 
-      if (code) {
-        values.push(code.data);
+        if (code) {
+          values.push(code.data);
+        }
       }
+
+      await getResized(600);
+      if (!values.length) await getResized(400);
+      if (!values.length) await getResized(200);
+      if (!values.length) await getResized(100);
     }
 
     await getCropped('center', 2);
