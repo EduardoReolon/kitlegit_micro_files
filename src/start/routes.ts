@@ -16,23 +16,24 @@ Route.group([
   Route.post('', 'QrcodeController.store'),
   Route.post('fromimg', 'QrcodeController.getFromImg'),
 ])
-  .prefix('api/v1/qrcode').middleware('AwsS3Settings')
+  .prefix('api/v1/qrcode')
 
 Route.group([
   Route.post('fromimg', 'BarcodeController.getFromImg'),
 ])
-  .prefix('api/v1/barcode').middleware('AwsS3Settings')
+  .prefix('api/v1/barcode')
 
 Route.group([
   Route.post('resize', 'ImgController.resize'),
   Route.post('watermark', 'ImgController.watermark'),
-  Route.get('squareToDataURL', 'ImgController.squareToDataURL')
+  Route.get('squareToDataURL', 'ImgController.squareToDataURL'),
+  Route.post('testingstorage', 'ImgController.testStorage')
 ])
-  .prefix('api/v1/img').middleware('AwsS3Settings')
+  .prefix('api/v1/img')
 
 Route.group([
   Route.post('', 'PdfController.store'),
 ])
-  .prefix('api/v1/pdf').middleware('AwsS3Settings')
+  .prefix('api/v1/pdf')
 
 export default Route.solveRoutes();

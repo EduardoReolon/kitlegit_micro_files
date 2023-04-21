@@ -1,5 +1,5 @@
 import { env } from "../../kernel/env";
-import AwsS3 from "../services/awsS3";
+import Storage from "../services/storage";
 import Log from "../services/log";
 const fs = require('fs');
 import { htmlToPdf } from 'convert-to-pdf'; // https://github.com/sankalpkataria/to-pdf
@@ -20,9 +20,9 @@ export default class Helpers {
   }
 
   static async readImgJimp({ relPath }: { relPath: string }) {
-    if (AwsS3.isActive()) {
-      const file = await new AwsS3({ key: relPath }).download({ type: 'buffer' });
-      if (!file) throw 'Error downloading file from AWS S3';
+    if (Storage.isActive()) {
+      const file = await new Storage({ key: relPath }).download({ type: 'buffer' });
+      if (!file) throw 'Error downloading file from storage';
 
       try {
         const jo = require('jpeg-autorotate');
@@ -44,9 +44,9 @@ export default class Helpers {
   }
 
   static async readImgSharp({ relPath }: { relPath: string }) {
-    if (AwsS3.isActive()) {
-      const file = await new AwsS3({ key: relPath }).download({ type: 'buffer' });
-      if (!file) throw 'Error downloading file from AWS S3';
+    if (Storage.isActive()) {
+      const file = await new Storage({ key: relPath }).download({ type: 'buffer' });
+      if (!file) throw 'Error downloading file from storage';
 
       return sharp(file as Buffer, { failOnError: false }).rotate();
     } else {
@@ -59,8 +59,8 @@ export default class Helpers {
   }
 
   static async getFileBuffer(relPath: string): Promise<Buffer | boolean> {
-    if (AwsS3.isActive()) {
-      const buffer = await new AwsS3({ key: relPath }).download({ type: 'buffer' });
+    if (Storage.isActive()) {
+      const buffer = await new Storage({ key: relPath }).download({ type: 'buffer' });
       if (!buffer) return false;
       return buffer as Buffer;
     } else if (fs.existsSync(Helpers.storageRoot(relPath))) return fs.readFileSync(Helpers.storageRoot(relPath));
@@ -87,9 +87,9 @@ export default class Helpers {
   }
 
   static async saveImgSharp({ relPath, file, storageClass = 'REDUCED_REDUNDANCY' }: { relPath: string, file: sharp.Sharp, storageClass?: awsS3StorageClasses }) {
-    if (AwsS3.isActive()) {
+    if (Storage.isActive()) {
       const buffer = await file.toBuffer();
-      await new AwsS3({ key: relPath }).upload({ storageClass, buffer });
+      await new Storage({ key: relPath }).upload({ storageClass, buffer });
     } else file.write(Helpers.storageRoot(relPath));
   }
 
@@ -179,8 +179,8 @@ export default class Helpers {
 
     if (!pdfBuffer) throw new Error('Unable to create PDF buffer');
     try {
-      if (AwsS3.isActive()) {
-        await new AwsS3({ key: `${relPath}/${fileName}.pdf` }).upload({ buffer: pdfBuffer });
+      if (Storage.isActive()) {
+        await new Storage({ key: `${relPath}/${fileName}.pdf` }).upload({ buffer: pdfBuffer });
       } else {
         fs.writeFile(`${Helpers.storageRoot(relPath)}/${fileName}.pdf`, pdfBuffer, "binary", (errFs: any) => {
           if (errFs) {

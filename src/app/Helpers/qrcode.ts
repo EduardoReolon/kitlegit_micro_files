@@ -1,6 +1,6 @@
 import Helpers from ".";
 const jsQR = require("jsqr"); // https://github.com/cozmo/jsQR
-import AwsS3 from "../services/awsS3";
+import Storage from "../services/storage";
 const QRCodeWriter = require('qrcode') // https://github.com/soldair/node-qrcode
 import Jimp from 'jimp';
 
@@ -19,9 +19,9 @@ export default class QRCode {
     try {
       await new Promise(async (resolve, reject) => {
         try {
-          if (AwsS3.isActive()) {
+          if (Storage.isActive()) {
             const buffer = await QRCodeWriter.toBuffer(QRdata, options);
-            await new AwsS3({key: relPath}).upload({buffer, storageClass: 'REDUCED_REDUNDANCY'});
+            await new Storage({key: relPath}).upload({buffer, storageClass: 'REDUCED_REDUNDANCY'});
             resolve('generated');
           } else {
             QRCodeWriter.toFile(Helpers.storageRoot(relPath), QRdata, options, (error: any, _str: any) => {
