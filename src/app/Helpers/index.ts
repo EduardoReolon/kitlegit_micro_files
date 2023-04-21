@@ -68,7 +68,7 @@ export default class Helpers {
     return false;
   }
 
-  static async imgCropSharp({ img }: { img: sharp.Sharp }) {
+  static async imgCropSharp({ img, imageCentered }: { img: sharp.Sharp, imageCentered?: boolean }) {
     const meta = await img.metadata();
     const height = meta.height || 1000;
     const width = meta.width || 1000;
@@ -81,7 +81,7 @@ export default class Helpers {
       h = height;
     }
     img.resize(Math.round(w), Math.round(h), {
-      position: 'top',
+      position: imageCentered ? undefined : 'top',
     });
     return sharp((await img.toBuffer({ resolveWithObject: true })).data, { failOnError: false });
   }
@@ -111,10 +111,11 @@ export default class Helpers {
   }
 
   static async imgResizeSharp({
-    relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY', rotate, orientation,
+    relPath, resizedRelPath, maxResolution = 124, storageClass = 'REDUCED_REDUNDANCY', rotate,
+    orientation, imageCentered
   }: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, storageClass?: awsS3StorageClasses, rotate?: boolean,
-    orientation: 'portraitUp' | 'landscapeRight' | 'landscapeLeft' | 'portraitDown',
+    orientation: 'portraitUp' | 'landscapeRight' | 'landscapeLeft' | 'portraitDown', imageCentered?: boolean
   }) {
     if (!resizedRelPath) resizedRelPath = relPath;
 
@@ -135,7 +136,7 @@ export default class Helpers {
           }
         }
       }
-      const original = await Helpers.imgCropSharp({ img });
+      const original = await Helpers.imgCropSharp({ img, imageCentered });
       await Helpers.imgRedizeSharpCore({ img: original, maxResolution });
       await Helpers.saveImgSharp({ relPath: resizedRelPath, file: original, storageClass });
     } catch (error) {
