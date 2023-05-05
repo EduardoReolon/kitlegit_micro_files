@@ -15,7 +15,7 @@ export default class {
   public async watermark({request, response}: HttpContextContract) {
     const requestAll = request.all();
 
-    await Watermark.addWatermark(requestAll.relPath, requestAll.watermarkRelPath, requestAll.certificateCode);
+    await Watermark.addWatermark(requestAll as any);
 
     response.status(200);
   }
