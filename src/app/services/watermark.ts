@@ -33,12 +33,16 @@ export default class Watermark {
 
       if (typeof qrCode ===  'boolean') throw new Error('Qrcode error');
       const fontSize = Math.floor((14 / 128) * sizeQRCode);
-      const textSVG = Buffer.from(`<svg width="${sizeQRCode}" height="${Math.floor(sizeQRCode + (fontSize * 2.5))}" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <text x="50%" y="${fontSize}px">${check_status}</text>
-        <text x="50%" y="100%" fill="white" dominant-baseline="auto" text-anchor="middle">${product_id?.toString().padStart(6, '0')}</text>
-        <style>
-          <![CDATA[text {font: bold ${fontSize}px Verdana, Helvetica, Arial, sans-serif;}]]>
-        </style>
+      // const textSVG = Buffer.from(`<svg width="${sizeQRCode}" height="${Math.floor(sizeQRCode + (fontSize * 2.5))}" xmlns:xlink="http://www.w3.org/1999/xlink">
+      //   <text x="50%" y="${fontSize}px" fill="white" dominant-baseline="hanging" text-anchor="middle">${check_status}</text>
+      //   <text x="50%" y="100%" fill="white" dominant-baseline="auto" text-anchor="middle">${product_id?.toString().padStart(6, '0')}</text>
+      //   <style>
+      //     <![CDATA[text {font: bold ${fontSize}px Verdana, Helvetica, Arial, sans-serif;}]]>
+      //   </style>
+      // </svg>`);
+      const textSVG = Buffer.from(`<svg>
+        <rect x="0" y="0" width="500" height="100" fill="#0000" />
+        <text x="10" y="76" font-size="25" fill="black">ID: ${check_status} ${product_id}</text>
       </svg>`);
       const {data: textSharp, info: infoText} = await Helpers.sharpFromBuffer(textSVG)
         .composite([
