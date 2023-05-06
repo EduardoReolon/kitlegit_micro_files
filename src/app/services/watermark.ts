@@ -37,7 +37,7 @@ export default class Watermark {
         <text x="50%" y="${fontSize}px" fill="white" dominant-baseline="hanging" text-anchor="middle">${check_status}</text>
         <text x="50%" y="100%" fill="white" dominant-baseline="auto" text-anchor="middle">${product_id?.toString().padStart(6, '0')}</text>
         <style>
-          <![CDATA[text {font: bold ${fontSize}px Verdana, Helvetica, Arial, sans-serif;}]]>
+          <![CDATA[text {font: bold ${fontSize}px Arial, Verdana, Helvetica, sans-serif;}]]>
         </style>
       </svg>`);
       const {data: textSharp, info: infoText} = await Helpers.sharpFromBuffer(textSVG)
