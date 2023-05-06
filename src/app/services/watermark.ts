@@ -32,10 +32,13 @@ export default class Watermark {
         .toBuffer({resolveWithObject: true});
 
       if (typeof qrCode ===  'boolean') throw new Error('Qrcode error');
-      const fontSize = (18 / 128) * sizeQRCode;
-      const textSVG = Buffer.from(`<svg width="${sizeQRCode}" height="${sizeQRCode + 52}" xmlns="http://www.w3.org/2000/svg">
-        <text x="50%" y="8%" font-size="${fontSize}" fill="white" dominant-baseline="middle" text-anchor="middle">${check_status}</text>
-        <text x="50%" y="92%" font-size="${fontSize}" fill="white" dominant-baseline="middle" text-anchor="middle">${product_id}</text>
+      const fontSize = Math.floor((14 / 128) * sizeQRCode);
+      const textSVG = Buffer.from(`<svg width="${sizeQRCode}" height="${Math.floor(sizeQRCode + (fontSize * 2.5))}" xmlns="http://www.w3.org/2000/svg">
+        <text x="50%" y="${fontSize}px" fill="white" dominant-baseline="hanging" text-anchor="middle">${check_status}</text>
+        <text x="50%" y="100%" fill="white" dominant-baseline="auto" text-anchor="middle">${product_id?.toString().padStart(6, '0')}</text>
+        <style>
+          <![CDATA[text {font: bold ${fontSize}px Verdana, Helvetica, Arial, sans-serif;}]]>
+        </style>
       </svg>`);
       const {data: textSharp, info: infoText} = await Helpers.sharpFromBuffer(textSVG)
         .composite([
@@ -53,8 +56,8 @@ export default class Watermark {
         ]).toBuffer({resolveWithObject: true});
       const watermarkY = (metaMain.height || 1000) - (info.height / 2) - padding;
       main.composite([
-        {input: qrCode, left: padding, top: watermarkY - (info.height / 2)},
-        {input: textSharp, left: padding, top: watermarkY - (infoText.height / 2) + 5}
+        {input: qrCode, left: padding, top: Math.floor(watermarkY - (info.height / 2))},
+        {input: textSharp, left: padding, top: Math.floor(watermarkY - (infoText.height / 2))}
       ])
 
       await Helpers.saveImgSharp({relPath: relPathTo || relPath, file: main});
