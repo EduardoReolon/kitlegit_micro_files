@@ -33,7 +33,7 @@ export default class Watermark {
 
       if (typeof qrCode ===  'boolean') throw new Error('Qrcode error');
       const fontSize = Math.floor((14 / 128) * sizeQRCode);
-      const textSVG = Buffer.from(`<svg width="${sizeQRCode}" height="${Math.floor(sizeQRCode + (fontSize * 2.5))}">
+      const textSVG = Buffer.from(`<svg>
         <text x="50%" y="${fontSize}px" fill="white" dominant-baseline="hanging" text-anchor="middle">${check_status}</text>
         <text x="50%" y="100%" fill="white" dominant-baseline="auto" text-anchor="middle">${product_id?.toString().padStart(6, '0')}</text>
         <style>
