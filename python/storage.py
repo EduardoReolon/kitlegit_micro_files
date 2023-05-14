@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 
 
-def downloadAsCv2(params: dict[str, str]):
+def downloadAsCv2(params):
     blob_service_client = BlobServiceClient.from_connection_string(
         'DefaultEndpointsProtocol=https;AccountName={};AccountKey={};EndpointSuffix=core.windows.net'
         .format(params['account'], params['account_key']))

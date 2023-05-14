@@ -12,7 +12,7 @@ for arg in sys.argv[1:]:
         currentKey = arg[2:]
     elif (len(currentKey) > 1 and currentKey not in params):
         params[currentKey] = arg
-print(params)
+
 if (params['target'] == 'storage'):
     img = getattr(storage, params['func'])(params)
     print(type(img))
