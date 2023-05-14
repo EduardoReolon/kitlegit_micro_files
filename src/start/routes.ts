@@ -27,7 +27,9 @@ Route.group([
   Route.post('resize', 'ImgController.resize'),
   Route.post('watermark', 'ImgController.watermark'),
   Route.get('squareToDataURL', 'ImgController.squareToDataURL'),
-  Route.post('testingstorage', 'ImgController.testStorage')
+  Route.post('testingstorage', 'ImgController.testStorage'),
+  Route.post('getdata', 'ImgController.getData'),
+  Route.post('testing', 'ImgController.testing'),
 ])
   .prefix('api/v1/img')
 

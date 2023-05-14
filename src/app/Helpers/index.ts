@@ -6,6 +6,7 @@ import { htmlToPdf } from 'convert-to-pdf'; // https://github.com/sankalpkataria
 import sharp from "sharp";
 import { awsS3StorageClasses } from "../interfaces";
 import Jimp from 'jimp';
+import Python from "../services/python";
 
 export default class Helpers {
   // both without / at the end
@@ -192,5 +193,14 @@ export default class Helpers {
     } catch (error: any) {
       new Log({ route: 'catch in pdf write' }).setError(error).setSideData({ place: 'catch writeFile' }).setResponse({ status: 17 }).save()
     }
+  }
+
+  static async getDataFromPhoto({relPath}: {relPath: string}) {
+    await Python.call({args: [
+      '--target img',
+      '--func dataExtraction',
+      `--relPath ${relPath}`,
+    ]});
+    return {barqrcodes: [], facts: []};
   }
 }

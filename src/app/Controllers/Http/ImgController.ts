@@ -1,5 +1,6 @@
 import { HttpContextContract } from "../../../contracts/requestsContracts";
 import Helpers from "../../Helpers";
+import Python from "../../services/python";
 import Storage from "../../services/storage";
 import Watermark from "../../services/watermark";
 
@@ -33,5 +34,18 @@ export default class {
     if (!(await storage.exists())) return response.status(400).send({msg: 'file doesn\'t exists'});
     if (!(await storage.download())) return response.status(400).send({msg: 'file not downloaded'});
     if (!(await storage.copy({keyTo}))) return response.status(400).send({msg: 'file not copied'});
+  }
+
+  public async getData({request, response}: HttpContextContract) {
+    const {relPath} = request.all() as {relPath: string};
+
+    await Helpers.getDataFromPhoto({relPath});
+    response.status(200).send(request.all());
+  }
+
+  public async testing({request, response}: HttpContextContract) {
+    const {args} = request.all() as {args: string[]};
+    const {stdout, stderr} = await Python.call({args});
+    response.status(200).send({stdout, stderr});
   }
 }

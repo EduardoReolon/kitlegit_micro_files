@@ -67,6 +67,10 @@ export default class Storage {
     settings = settingsNew;
   }
 
+  static getSettings() {
+    return settings;
+  }
+
   async streamToBuffer(stream: NodeJS.ReadableStream | undefined): Promise<Buffer> {
     if (!stream) throw new Error('Stream error');
 
