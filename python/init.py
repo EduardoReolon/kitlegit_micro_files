@@ -2,7 +2,7 @@ import sys
 import storage
 import img
 
-params: dict[str, str] = {}
+params = {}
 
 currentKey = ''
 for arg in sys.argv[1:]:
