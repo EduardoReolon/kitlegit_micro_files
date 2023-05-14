@@ -1,11 +1,9 @@
 import Helpers from "../Helpers";
 import fs from 'fs';
 import child_process from 'child_process';
-import util from 'util';
 import Storage from "./storage";
-const exec = util.promisify(child_process.exec);
 
-let argExec = 'py';
+let argExec = process.platform.match(/win/i) ? 'py' : 'python3';
 
 export default class Python {
   static argExecDefined = false;
