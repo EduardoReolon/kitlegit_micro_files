@@ -105,7 +105,7 @@ export default class Storage {
   }
 
   newLog(funcName: string) {
-    return new Logs({ route: `AwsS3 - ${funcName}` });
+    return new Logs({ route: `Storage - ${funcName}` });
   }
 
   async copy({keyTo}: {keyTo: string}) {
@@ -148,9 +148,7 @@ export default class Storage {
           .setSideData({key: this.key}).save();
       } else {
         const blockBlobClient = this.getBlockBlobAzure();
-        const snapshotResponse = await blockBlobClient.createSnapshot();
-        const blobSnapshotClient = blockBlobClient.withSnapshot(snapshotResponse.snapshot!);
-        const response = await blobSnapshotClient.download(0);
+        const response = await blockBlobClient.download(0);
         if (type === 'buffer') return await this.streamToBuffer(response.readableStreamBody!);
         this.newLog('download').setResponse({response: response.errorCode})
           .setSideData({key: this.key}).save();
