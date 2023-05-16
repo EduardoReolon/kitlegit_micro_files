@@ -122,18 +122,18 @@ export default class Helpers {
 
     try {
       let img = await Helpers.readImgSharp({ relPath });
+      const start = new Date();
       if (rotate) {
-        img = sharp(await img.toBuffer());
         if (orientation === 'landscapeLeft') {
-          img = sharp(await img.rotate(90).toBuffer());
+          img = sharp(await sharp(await img.toBuffer()).rotate(90).toBuffer());
         } else if (orientation === 'landscapeRight') {
-          img = sharp(await img.rotate(270).toBuffer());
+          img = sharp(await sharp(await img.toBuffer()).rotate(270).toBuffer());
         } else if (orientation === 'portraitDown') {
-          img = sharp(await img.rotate(180).toBuffer());
+          img = sharp(await sharp(await img.toBuffer()).rotate(180).toBuffer());
         } else {
           const { width, height } = await img.metadata();
           if ((width || 0) > (height || 0)) {
-            img = sharp(await img.rotate(90).toBuffer());
+            img = sharp(await sharp(await img.toBuffer()).rotate(90).toBuffer());
           }
         }
       }

@@ -1,7 +1,6 @@
 import sys
 import storage
 import img
-
 params = {}
 
 currentKey = ''
@@ -18,5 +17,6 @@ if (params['target'] == 'storage'):
     print(type(img))
     print(img.shape)
 elif params['target'] == 'img':
+    # raise Exception('any')
     values = getattr(img, params['func'])(params)
     print(values)

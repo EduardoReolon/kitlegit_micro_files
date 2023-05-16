@@ -9,6 +9,7 @@ def downloadAsCv2(params):
         .format(params['account'], params['account_key']))
     container_client = blob_service_client.get_container_client(
         container=params['container'])
-    nparr = np.frombuffer(container_client.download_blob(
-        params['relPath']).readall(), np.uint8)
+    buffer = container_client.download_blob(
+        params['relPath']).readall()
+    nparr = np.frombuffer(buffer, np.uint8)
     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
