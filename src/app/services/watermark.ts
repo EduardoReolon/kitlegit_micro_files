@@ -46,17 +46,18 @@ export default class Watermark {
           </style>
         </svg>`;
       else {
-        paddingYQRCode = 90;
+        paddingYQRCode = 100;
         svgStr = `<svg width="800" height="350" xmlns="http://www.w3.org/2000/svg">
-            <text x="200px" y="80px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
-            <text x="200px" y="140px" fill="#dfff70" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Authentic</text>
+            <text x="240px" y="60px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
+            <text x="240px" y="140px" fill="#dfff70" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Authentic</text>
             <text x="0" y="205px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
             <text x="0" y="235px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
             <text x="0" y="265px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
             <style>
-              <![CDATA[text {font: 50px bold Verdana, Helvetica, Arial, sans-serif;}]]>
+              <![CDATA[text {font: 80px bold Verdana, Helvetica, Arial, sans-serif;}]]>
             </style>
           </svg>`;
+
         const bufferBack = Buffer.from(`<svg width="85" height="70" xmlns="http://www.w3.org/2000/svg">
           <defs>
           <style type="text/css"><![CDATA[.fil0 {fill:#DDFD71}]]></style>
@@ -84,7 +85,25 @@ export default class Watermark {
         ])
         .toBuffer({resolveWithObject: true});
         compositeExtras.push({input: sharpBack, left: 0, top: (metaMain.height || 2048) - infoBack.height});
-        const bufferKitLog = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="150px" height="40px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+
+        const bufferGradient = Buffer.from(`<svg width="${metaMain.width}" height="${metaMain.height}"
+            xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="three_opacity_stops" gradientTransform="rotate(90)">
+                <stop offset="0%" style="stop-color: #000; stop-opacity: 0.0"/>
+                <stop offset="60%" style="stop-color: #000; stop-opacity: 0.3"/>
+                <stop offset="100%" style="stop-color: #000; stop-opacity: 0.90"/>
+              </linearGradient>
+            </defs>
+
+            <rect width="${metaMain.width}" height="${metaMain.height}"
+              style="fill: url(#three_opacity_stops);"/>
+          </svg>`);
+        const {data: sharpGradient} = await Helpers.sharpFromBuffer(bufferGradient)
+          .toBuffer({resolveWithObject: true});
+        compositeExtras.push({input: sharpGradient, left: 0, top: 0});
+
+        const bufferKitLog = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="200px" height="80px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
           viewBox="0 0 37.64 9.89"
           xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs>
