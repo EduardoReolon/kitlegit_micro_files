@@ -1,7 +1,16 @@
 import sys
 import storage
 import img
+import json
 params = {}
+
+
+class BytesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
+        return json.JSONEncoder.default(self, obj)
+
 
 currentKey = ''
 for arg in sys.argv[1:]:
@@ -19,4 +28,4 @@ if (params['target'] == 'storage'):
 elif params['target'] == 'img':
     # raise Exception('any')
     values = getattr(img, params['func'])(params)
-    print(values)
+    print(json.dumps(values, cls=BytesEncoder))

@@ -196,11 +196,30 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath}: {relPath: string}) {
-    await Python.call({args: [
+    const {stdout, stderr } = await Python.call({args: [
       '--target img',
       '--func dataExtraction',
       `--relPath ${relPath}`,
     ]});
-    return {barqrcodes: [], facts: []};
+    if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
+
+    const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[]} = {barcodes: [], qrcodes: [], facts: []};
+
+    try {
+      if (stdout && stdout.length) {
+        const obj = JSON.parse(stdout) as {barqrcodes: {data: string, type: 'QRCODE' | 'CODE128' | 'anyOther'}[], facts: string[]};
+        for (const barQr of obj.barqrcodes) {
+          if (barQr.type === 'QRCODE') dataReturn.qrcodes.push(barQr.data);
+          else dataReturn.barcodes.push(barQr.data);
+        }
+        for (const fact of obj.facts) {
+          if (fact.length) dataReturn.facts.push(fact.replace(/\n/g, ' '));
+        }
+      }
+    } catch (error) {
+      new Log({route: 'getDataFromPhoto tryCatch'}).setError(error as Error).save();
+    }
+
+    return dataReturn;
   }
 }

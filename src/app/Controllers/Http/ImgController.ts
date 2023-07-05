@@ -39,8 +39,7 @@ export default class {
   public async getData({request, response}: HttpContextContract) {
     const {relPath} = request.all() as {relPath: string};
 
-    await Helpers.getDataFromPhoto({relPath});
-    response.status(200).send(request.all());
+    response.status(200).send(await Helpers.getDataFromPhoto({relPath}));
   }
 
   public async testing({request, response}: HttpContextContract) {
