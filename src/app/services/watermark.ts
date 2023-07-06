@@ -50,9 +50,9 @@ export default class Watermark {
         svgStr = `<svg width="800" height="350" xmlns="http://www.w3.org/2000/svg">
             <text x="240px" y="60px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
             <text x="240px" y="140px" fill="#dfff70" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Authentic</text>
-            <text x="0" y="205px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
-            <text x="0" y="235px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
-            <text x="0" y="265px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
+            <text x="0" y="215px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
+            <text x="0" y="245px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
+            <text x="0" y="275px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
             <style>
               <![CDATA[text {font: 80px bold Verdana, Helvetica, Arial, sans-serif;}]]>
             </style>
@@ -73,7 +73,7 @@ export default class Watermark {
         .composite([
           {
             // transparency
-            input: Buffer.from([0,0,0,50]),
+            input: Buffer.from([0,0,0,30]),
             raw: {
               width: 1,
               height: 1,
