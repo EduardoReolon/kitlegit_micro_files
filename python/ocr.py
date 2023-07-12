@@ -24,7 +24,7 @@ def decodeImgEasyocr(img, params):
             img = cv2.resize(
                 img, (int(img.shape[1] * coef), int(img.shape[0] * coef)))
 
-    result = reader.readtext(img, batch_size=15)
+    result = reader.readtext(img, batch_size=1)
 
     for row in result:
         text = text + ' ' + row[1]
