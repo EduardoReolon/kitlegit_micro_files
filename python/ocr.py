@@ -22,7 +22,7 @@ def decodeImgEasyocr(img, params):
         coef = min([1, size / maxDim])
         if (coef < 1):
             img = cv2.resize(
-                img, (int(img.shape[1] * coef), int(img.shape[0] * coef)))
+                img, (int(img.shape[1] * coef), int(img.shape[0] * coef)), cv2.INTER_LINEAR)
 
     result = reader.readtext(img, batch_size=1)
 
