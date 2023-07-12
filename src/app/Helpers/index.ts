@@ -8,6 +8,8 @@ import { awsS3StorageClasses } from "../interfaces";
 import Jimp from 'jimp';
 import Python from "../services/python";
 
+let imgIndex = 0;
+
 export default class Helpers {
   // both without / at the end
   static appRoot(path: string = '') {
@@ -200,7 +202,9 @@ export default class Helpers {
       '--target img',
       '--func dataExtraction',
       `--relPath ${relPath}`,
+      `--imgIndex ${imgIndex}`
     ]});
+    imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
     const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[]} = {barcodes: [], qrcodes: [], facts: []};

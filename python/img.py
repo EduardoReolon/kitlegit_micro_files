@@ -7,6 +7,9 @@ def dataExtraction(params):
     img = downloadAsCv2(params)
     barqrcodes = barqrcode.decodeImg(img)
 
-    facts = ocr.decodeImg(img)
+    if (params['easyocr'] == '1'):
+        facts = ocr.decodeImgEasyocr(img, params)
+    else:
+        facts = ocr.decodeImg(img, params)
 
     return {'barqrcodes': barqrcodes, 'facts': facts}
