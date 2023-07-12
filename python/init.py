@@ -2,10 +2,7 @@ import sys
 import storage
 import img
 import json
-import os
 params = {}
-
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class BytesEncoder(json.JSONEncoder):

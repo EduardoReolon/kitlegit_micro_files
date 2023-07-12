@@ -17,7 +17,7 @@ def decodeImgEasyocr(img, params):
     text = ''
 
     if ('size' in params):
-        size = int(params['size'])
+        size = min([int(params['size']), 1800])
         maxDim = max([img.shape[0], img.shape[1]])
         coef = min([1, size / maxDim])
         if (coef < 1):
