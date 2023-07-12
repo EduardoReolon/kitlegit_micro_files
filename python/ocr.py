@@ -16,13 +16,14 @@ def decodeImgEasyocr(img, params):
     reader = easyocr.Reader(['en'])
     text = ''
 
-    if ('size' in params):
-        size = min([int(params['size']), 1800])
-        maxDim = max([img.shape[0], img.shape[1]])
-        coef = min([1, size / maxDim])
-        if (coef < 1):
-            img = cv2.resize(
-                img, (int(img.shape[1] * coef), int(img.shape[0] * coef)), cv2.INTER_LINEAR)
+    if ('size' not in params):
+        params['size'] = 100000
+    size = min([int(params['size']), 1800])
+    maxDim = max([img.shape[0], img.shape[1]])
+    coef = min([1, size / maxDim])
+    if (coef < 1):
+        img = cv2.resize(
+            img, (int(img.shape[1] * coef), int(img.shape[0] * coef)), cv2.INTER_LINEAR)
 
     result = reader.readtext(img, batch_size=1)
 
