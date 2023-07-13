@@ -197,13 +197,15 @@ export default class Helpers {
     }
   }
 
-  static async getDataFromPhoto({relPath}: {relPath: string}) {
-    const {stdout, stderr } = await Python.call({args: [
+  static async getDataFromPhoto({relPath, coefWidth}: {relPath: string, coefWidth: number}) {
+    const args = [
       '--target img',
       '--func dataExtraction',
       `--relPath ${relPath}`,
       `--imgIndex ${imgIndex}`
-    ]});
+    ];
+    if (coefWidth) args.push(`--coefWidth ${coefWidth}`);
+    const {stdout, stderr } = await Python.call({args});
     imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
