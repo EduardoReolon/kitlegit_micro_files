@@ -37,9 +37,11 @@ export default class {
   }
 
   public async getData({request, response}: HttpContextContract) {
-    const {relPath, coefWidth} = request.all() as {relPath: string, coefWidth: number};
+    const {relPath, coefWidth, tesseract, size} = request.all() as {
+      relPath: string, coefWidth: number, tesseract: boolean, size: number
+    };
 
-    response.status(200).send(await Helpers.getDataFromPhoto({relPath, coefWidth}));
+    response.status(200).send(await Helpers.getDataFromPhoto({relPath, coefWidth, tesseract, size}));
   }
 
   public async testing({request, response}: HttpContextContract) {

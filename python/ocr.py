@@ -24,7 +24,7 @@ def decodeImgEasyocr(img, params):
     coef = min([1, size / maxDim])
     if (coef < 1):
         img = cv2.resize(
-            img, (int(img.shape[1] * coef), int(img.shape[0] * coef)), cv2.INTER_LINEAR)
+            img, (int(img.shape[1] * coef), int(img.shape[0] * coef)))
 
     if ('coefWidth' in params):
         coefWidth = min([1, float(params['coefWidth'])])

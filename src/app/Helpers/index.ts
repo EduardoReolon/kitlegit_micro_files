@@ -197,15 +197,18 @@ export default class Helpers {
     }
   }
 
-  static async getDataFromPhoto({relPath, coefWidth}: {relPath: string, coefWidth: number}) {
+  static async getDataFromPhoto({relPath, coefWidth, tesseract, size}: {relPath: string, coefWidth: number, tesseract: boolean, size: number}) {
     const args = [
       '--target img',
       '--func dataExtraction',
       `--relPath ${relPath}`,
-      `--imgIndex ${imgIndex}`
+      `--imgIndex ${imgIndex}`,
     ];
+    if (size) args.push(`--size ${size}`);
+    if (!tesseract) args.push(`--easyocr 1`);
     if (coefWidth) args.push(`--coefWidth ${coefWidth}`);
     const {stdout, stderr } = await Python.call({args});
+
     imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
