@@ -34,7 +34,7 @@ export default class Watermark {
         .toBuffer({resolveWithObject: true});
 
       if (typeof qrCode ===  'boolean') throw new Error('Qrcode error');
-      const fontSize = Math.floor((20 / 128) * sizeQRCode);
+      const fontSize = Math.floor((17 / 128) * sizeQRCode);
       let svgStr: string
       let paddingYQRCode = 0;
       const compositeExtras: {input: Buffer, left: number, top: number}[] = [];
