@@ -2,6 +2,7 @@ import numpy as np
 import pytesseract
 import easyocr
 import cv2
+import math
 
 
 def decodeImg(img, params):
@@ -24,6 +25,12 @@ def decodeImgEasyocr(img, params):
     if (coef < 1):
         img = cv2.resize(
             img, (int(img.shape[1] * coef), int(img.shape[0] * coef)), cv2.INTER_LINEAR)
+
+    if ('coefWidth' in params):
+        coefWidth = min([1, float(params['coefWidth'])])
+        widthStart = math.floor(img.shape[1] * coefWidth / 2)
+        widthEnd = math.floor(img.shape[1] * (1 - (coefWidth / 2)))
+        img = img[0:img.shape[0], widthStart:widthEnd]
 
     result = reader.readtext(img, batch_size=1)
 
