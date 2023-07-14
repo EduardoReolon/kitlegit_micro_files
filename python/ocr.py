@@ -17,8 +17,6 @@ def decodeImgEasyocr(img, params):
     reader = easyocr.Reader(['en'])
     text = ''
 
-    img = cv2.imread(params['imgPath'])
-
     if ('size' not in params):
         params['size'] = 100000
     size = min([int(params['size']), 1800])
