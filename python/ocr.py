@@ -15,7 +15,6 @@ def decodeImg(img, params):
 
 def decodeImgEasyocr(img, params):
     reader = easyocr.Reader(['en'])
-    text = ''
 
     if ('coefWidth' in params or 'coefHight' in params):
         if ('coefWidth' not in params):
@@ -42,9 +41,33 @@ def decodeImgEasyocr(img, params):
         img = cv2.resize(
             img, (int(img.shape[1] * coef), int(img.shape[0] * coef)))
 
-    result = reader.readtext(img, batch_size=1)
+    facts = []
+    angles = [0]
+    if ('anglesCount' in params):
+        anglesCount = int(params['anglesCount'])
+        if (anglesCount >= 2):
+            angles.append(90)
+        if (anglesCount >= 3):
+            angles.append(-90)
+        if (anglesCount >= 4):
+            angles.append(180)
 
-    for row in result:
-        text = text + ' ' + row[1]
+    for angle in angles:
+        if (angle == 0):
+            result = reader.readtext(img, batch_size=1)
+        elif (angle == 90):
+            result = reader.readtext(cv2.rotate(
+                img, cv2.ROTATE_90_CLOCKWISE), batch_size=1)
+        elif (angle == -90):
+            result = reader.readtext(cv2.rotate(
+                img, cv2.ROTATE_90_COUNTERCLOCKWISE), batch_size=1)
+        elif (angle == 180):
+            result = reader.readtext(cv2.rotate(
+                img, cv2.ROTATE_180), batch_size=1)
 
-    return [text]
+        text = ''
+        for row in result:
+            text = text + ' ' + row[1]
+        facts.append(text)
+
+    return facts
