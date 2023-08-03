@@ -45,8 +45,8 @@ export default class {
   }
 
   public async testing({request, response}: HttpContextContract) {
-    const {args} = request.all() as {args: string[]};
-    const {stdout, stderr } = await Python.call({args});
+    const {args, method} = request.all() as {args: string[], method: 'socket' | 'spawn' | undefined};
+    const {stdout, stderr } = await Python.call({args, method});
     response.status(200).send({stdout, stderr});
   }
 }

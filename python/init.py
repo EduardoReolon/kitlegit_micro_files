@@ -1,7 +1,6 @@
 import sys
-import storage
-import img
 import json
+import zmq  # https://zeromq.org/languages/python/
 params = {}
 
 
@@ -21,11 +20,40 @@ for arg in sys.argv[1:]:
     elif (len(currentKey) > 1 and currentKey not in params):
         params[currentKey] = arg
 
-if (params['target'] == 'storage'):
-    img = getattr(storage, params['func'])(params)
-    print(type(img))
-    print(img.shape)
-elif params['target'] == 'img':
-    # raise Exception('any')
-    values = getattr(img, params['func'])(params)
-    print(json.dumps(values, cls=BytesEncoder))
+
+def apply(params):
+    if (params['target'] == 'storage'):
+        import storage
+        img = getattr(storage, params['func'])(params)
+        return img.shape
+    elif params['target'] == 'img':
+        import img
+        # raise Exception('any')
+        values = getattr(img, params['func'])(params)
+        return json.dumps(values, cls=BytesEncoder)
+
+
+if ('connectionMethod' not in params or params['connectionMethod'] == 'socket'):
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind("tcp://*:5555")
+
+    while True:
+        try:
+            message = socket.recv()
+            req = json.loads(message)
+
+            values = apply(req)
+            socket.send_json(json.dumps(values, cls=BytesEncoder))
+        except:
+            socket.send_string('error')
+else:
+    print(apply(params))
+# elif (params['target'] == 'storage'):
+#     img = getattr(storage, params['func'])(params)
+#     print(type(img))
+#     print(img.shape)
+# elif params['target'] == 'img':
+#     # raise Exception('any')
+#     values = getattr(img, params['func'])(params)
+#     print(json.dumps(values, cls=BytesEncoder))
