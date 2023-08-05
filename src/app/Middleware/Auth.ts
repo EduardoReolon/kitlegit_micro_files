@@ -2,7 +2,7 @@ import { HttpContextContract, middlewareContract } from "../../contracts/request
 
 export default class AuthMiddleware implements middlewareContract {
   isGlobal: boolean = false;
-  priority: number = 3; // 0-10
+  priority: number = 4; // 0-10
 
   public async handle({}: HttpContextContract, next: () => Promise<void>) {
     await next();
