@@ -17,17 +17,18 @@ export default class AuthMiddleware implements middlewareContract {
   }
 
   public async handle(ctx: HttpContextContract, next: () => Promise<void>) {
-    const simultaneousRequests = 1;
+    const putOnHold = queue.length >= 1;
+
     const nextForQueue = new Promise((resolve) => {
       queue.push({
-        called: false,
+        called: !putOnHold,
         callNext() {
           this.called = true;
           resolve('');
         }
       });
     })
-    if (queue.length > simultaneousRequests) await nextForQueue;
+    if (putOnHold) await nextForQueue;
 
     try {
       await next();
