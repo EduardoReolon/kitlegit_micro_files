@@ -39,7 +39,7 @@ def decodeImgEasyocr(img, params):
     coef = min([1, size / maxDim])
     if (coef < 1):
         img = cv2.resize(
-            img, (int(img.shape[1] * coef), int(img.shape[0] * coef)))
+            img, (0, 0), fx=coef, fy=coef, interpolation=cv2.INTER_AREA)
 
     facts = []
     angles = [0]
