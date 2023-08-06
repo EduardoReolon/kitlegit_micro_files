@@ -209,8 +209,8 @@ export default class Helpers {
     }
   }
 
-  static async getDataFromPhoto({relPath, coefWidth, coefHight, tesseract, size, anglesCount}: {
-    relPath: string, coefWidth: number, coefHight: number, tesseract: boolean, size: number, anglesCount: number
+  static async getDataFromPhoto({relPath, maxResolution, coefWidth, coefHight, tesseract, size, anglesCount}: {
+    relPath: string, maxResolution?: number, coefWidth: number, coefHight: number, tesseract: boolean, size: number, anglesCount: number
   }) {
     const args = [
       '--target img',
@@ -223,6 +223,7 @@ export default class Helpers {
     if (coefWidth) args.push(`--coefWidth ${coefWidth}`);
     if (coefHight) args.push(`--coefHight ${coefHight}`);
     if (anglesCount) args.push(`--anglesCount ${anglesCount}`);
+    if (maxResolution) args.push(`--maxResolution ${maxResolution}`);
     const {stdout, stderr } = await Python.call({args});
 
     imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;

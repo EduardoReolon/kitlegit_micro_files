@@ -5,21 +5,7 @@ import cv2
 import math
 
 
-def dataExtraction(params):
-    img = downloadAsCv2(params)
-    barqrcodes = barqrcode.decodeImg(img)
-
-    if (params['easyocr'] == '1'):
-        facts = ocr.decodeImgEasyocr(img, params)
-    else:
-        facts = ocr.decodeImg(img, params)
-
-    return {'barqrcodes': barqrcodes, 'facts': facts}
-
-
-def resize(params):
-    img = downloadAsCv2(params)
-
+def resizeCore(img, params):
     minDim = min([img.shape[0], img.shape[1]])
     widthPadding = math.floor((img.shape[1] - minDim) / 2)
     hightPadding = math.floor((img.shape[0] - minDim) / 2)
@@ -36,3 +22,23 @@ def resize(params):
 
     blob_name = params['resizedRelPath'] if 'resizedRelPath' in params else params['relPath']
     uploadCv2(params, blob_name, img, quality)
+    return img
+
+
+def dataExtraction(params):
+    img = downloadAsCv2(params)
+    if 'maxResolution' in params:
+        img = resize(img, params)
+    barqrcodes = barqrcode.decodeImg(img)
+
+    if (params['easyocr'] == '1'):
+        facts = ocr.decodeImgEasyocr(img, params)
+    else:
+        facts = ocr.decodeImg(img, params)
+
+    return {'barqrcodes': barqrcodes, 'facts': facts}
+
+
+def resize(params):
+    img = downloadAsCv2(params)
+    resizeCore(img, params)
