@@ -3,6 +3,7 @@ import fs from 'fs';
 import child_process from 'child_process';
 import Storage from "./storage";
 const zmq = require("zeromq");
+// import zmq from 'zeromq'
 
 let argExec = process.platform.match(/win/i) ? 'py' : 'python3';
 
@@ -36,17 +37,30 @@ export default class Python {
     }
 
     const sock = new zmq.Request;
+
+    let result: Buffer | string
+
     let tries = 0;
+    let resolve: (value: unknown) => void;
+    const promise = new Promise((r) => {resolve = r})
     sock.events.on('connect:retry', () => {
       tries += 1;
-      if (tries > 3) throw new Error('No socket connection');
+      if (tries > 1) resolve('');
     });
+
+    sock.events.on('connect', () => {
+      tries = Infinity;
+      resolve('');
+    })
 
     sock.connect("tcp://localhost:5555");
 
-    await sock.send(JSON.stringify(params))
-    let [result]: [Buffer | string] = await sock.receive() as [Buffer];
+    await promise;
+    if (tries < Infinity) throw new Error('No socket connection');
 
+    await sock.send(JSON.stringify(params));
+
+    [result] = await sock.receive() as [Buffer];
 
     result = result.toString();
     if (result === 'error') throw new Error('Error inside python');
@@ -75,6 +89,7 @@ export default class Python {
       try {
         return await Python.socketCall({args});
       } catch (error) {
+        console.log(error)
         return await Python.call({args, method: 'spawn'});
       }
     }
