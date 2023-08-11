@@ -209,8 +209,11 @@ export default class Helpers {
     }
   }
 
-  static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight, tesseract, size, anglesCount}: {
-    relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number, coefHight: number, tesseract: boolean, size: number, anglesCount: number
+  static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
+    tesseract, size, anglesCount, hasQrcode, hasBarcode, hasFact}: {
+    relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
+    coefHight: number, tesseract: boolean, size: number, anglesCount: number,
+    hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean
   }) {
     const args = [
       '--target img',
@@ -225,6 +228,9 @@ export default class Helpers {
     if (anglesCount) args.push(`--anglesCount ${anglesCount}`);
     if (maxResolution) args.push(`--maxResolution ${maxResolution}`);
     if (resizedRelPath) args.push(`--resizedRelPath ${resizedRelPath}`);
+    args.push(`--hasQrcode ${!!hasQrcode}`);
+    args.push(`--hasBarcode ${!!hasBarcode}`);
+    args.push(`--hasFact ${!!hasFact}`);
     const {stdout, stderr } = await Python.call({args});
 
     imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;
@@ -234,9 +240,9 @@ export default class Helpers {
 
     try {
       if (stdout && stdout.length) {
-        const obj = JSON.parse(stdout) as {barqrcodes: {data: string, type: 'QRCODE' | 'CODE128' | 'anyOther'}[], facts: string[]};
+        const obj = JSON.parse(stdout) as {barqrcodes: {data: string, type: 'QRCODE' | 'qr' | 'CODE128' | 'anyOther'}[], facts: string[]};
         for (const barQr of obj.barqrcodes) {
-          if (barQr.type === 'QRCODE') dataReturn.qrcodes.push(barQr.data);
+          if (barQr.type === 'QRCODE' || barQr.type === 'qr') dataReturn.qrcodes.push(barQr.data);
           else dataReturn.barcodes.push(barQr.data);
         }
         for (const fact of obj.facts) {

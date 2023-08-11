@@ -27,9 +27,13 @@ def resizeCore(img, params):
 
 def dataExtraction(params):
     img = downloadAsCv2(params)
+    if (params['hasQrcode'] == 'true' or params['hasBarcode'] == 'true'):
+        barqrcodes = barqrcode.decodeImg(img, params)
+    else:
+        barqrcodes = []
+
     if 'maxResolution' in params:
         img = resizeCore(img, params)
-    barqrcodes = barqrcode.decodeImg(img)
 
     if (params['easyocr'] == '1'):
         facts = ocr.decodeImgEasyocr(img, params)

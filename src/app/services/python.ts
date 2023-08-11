@@ -5,7 +5,8 @@ import Storage from "./storage";
 const zmq = require("zeromq");
 // import zmq from 'zeromq'
 
-let argExec = process.platform.match(/win/i) ? 'py' : 'python3';
+const os = process.platform.match(/win/i) ? 'win' : 'linux';
+let argExec = os === 'win' ? 'py' : 'python3';
 
 export default class Python {
   static argExecDefined = false;
@@ -30,6 +31,7 @@ export default class Python {
       account: storageSettings.azure.account,
       account_key: storageSettings.azure.account_key,
       container: storageSettings.azure.container,
+      os,
     }
     for (const arg of args) {
       const arr = arg.slice(2).split(' ');
@@ -82,6 +84,7 @@ export default class Python {
           `--account ${storageSettings.azure.account}`,
           `--account_key ${storageSettings.azure.account_key}`,
           `--container ${storageSettings.azure.container}`,
+          `--os ${os}`,
           ...args,
         ],
         {encoding: 'utf-8', stdio: ['ignore', 'pipe', 'inherit'], shell: true})

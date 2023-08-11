@@ -37,11 +37,17 @@ export default class {
   }
 
   public async getData({request, response}: HttpContextContract) {
-    const {relPath, resizedRelPath, maxResolution, coefWidth, coefHight, tesseract, size, anglesCount} = request.all() as {
-      relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number, coefHight: number, tesseract: boolean, size: number, anglesCount: number
+    const {relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
+      tesseract, size, anglesCount, hasQrcode, hasBarcode, hasFact} = request.all() as {
+      relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
+      coefHight: number, tesseract: boolean, size: number, anglesCount: number,
+      hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean
     };
 
-    response.status(200).send(await Helpers.getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight, tesseract, size, anglesCount}));
+    response.status(200).send(await Helpers.getDataFromPhoto({
+      relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
+      tesseract, size, anglesCount, hasQrcode, hasBarcode, hasFact,
+    }));
   }
 
   public async testing({request, response}: HttpContextContract) {

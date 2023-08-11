@@ -1,6 +1,7 @@
 from azure.storage.blob import BlobServiceClient
 import numpy as np
 import cv2
+import os
 
 
 def getContainer(params):
@@ -16,9 +17,10 @@ def downloadAsCv2(params):
     buffer = container_client.download_blob(
         params['relPath']).readall()
 
-    # isExist = os.path.exists('storage')
-    # if not isExist:
-    #     os.makedirs('storage')
+    storageFolder = 'python/storage' if os.path.exists('python') else 'storage'
+    isExist = os.path.exists(storageFolder)
+    if not isExist:
+        os.makedirs(storageFolder)
     # if ('imgIndex' not in params):
     #     params['imgIndex'] = '0'
     # params['imgPath'] = 'storage/img' + params['imgIndex'] + '.jpg'
