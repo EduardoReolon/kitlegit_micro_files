@@ -35,10 +35,13 @@ def dataExtraction(params):
     if 'maxResolution' in params:
         img = resizeCore(img, params)
 
-    if (params['easyocr'] == '1'):
-        facts = ocr.decodeImgEasyocr(img, params)
+    if (params['hasFact'] == 'true'):
+        if (params['easyocr'] == '1'):
+            facts = ocr.decodeImgEasyocr(img, params)
+        else:
+            facts = ocr.decodeImg(img, params)
     else:
-        facts = ocr.decodeImg(img, params)
+        facts = []
 
     return {'barqrcodes': barqrcodes, 'facts': facts}
 

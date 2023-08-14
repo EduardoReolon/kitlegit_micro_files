@@ -242,8 +242,11 @@ export default class Helpers {
       if (stdout && stdout.length) {
         const obj = JSON.parse(stdout) as {barqrcodes: {data: string, type: 'QRCODE' | 'qr' | 'CODE128' | 'anyOther'}[], facts: string[]};
         for (const barQr of obj.barqrcodes) {
-          if (barQr.type === 'QRCODE' || barQr.type === 'qr') dataReturn.qrcodes.push(barQr.data);
-          else dataReturn.barcodes.push(barQr.data);
+          if (barQr.type === 'QRCODE' || barQr.type === 'qr') {
+            if (!dataReturn.qrcodes.includes(barQr.data)) dataReturn.qrcodes.push(barQr.data);
+          } else {
+            if (!dataReturn.barcodes.includes(barQr.data)) dataReturn.barcodes.push(barQr.data);
+          }
         }
         for (const fact of obj.facts) {
           if (fact.length) dataReturn.facts.push(fact.replace(/\n/g, ' '));
