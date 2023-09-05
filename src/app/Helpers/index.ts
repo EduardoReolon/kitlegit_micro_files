@@ -210,9 +210,9 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-    tesseract, size, anglesCount, hasQrcode, hasBarcode, hasFact}: {
+    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact}: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
-    coefHight: number, tesseract: boolean, size: number, anglesCount: number,
+    coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
     hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean
   }) {
     const args = [
@@ -222,6 +222,7 @@ export default class Helpers {
       `--imgIndex ${imgIndex}`,
     ];
     if (size) args.push(`--size ${size}`);
+    if (sizeQrcode) args.push(`--sizeQrcode ${sizeQrcode}`);
     if (!tesseract) args.push(`--easyocr 1`);
     if (coefWidth) args.push(`--coefWidth ${coefWidth}`);
     if (coefHight) args.push(`--coefHight ${coefHight}`);
