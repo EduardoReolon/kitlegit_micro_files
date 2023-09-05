@@ -74,7 +74,7 @@ def decodeImg(img, params):
                         {'data': barcode['text'], 'type': barcode['type']})
 
     # try first with reduced size
-    def resizeAndGetCodes(size: int = 1000):
+    def resizeAndGetCodes(size: int = 1500):
         maxDim = max([img.shape[0], img.shape[1]])
         coef = min([1, size / maxDim])
         im = img
@@ -97,7 +97,7 @@ def decodeImg(img, params):
             if code['type'] != 'qr':
                 qrcodeFound = True
         if qrcodeFound == False:
-            size = 1500
+            size = 2000
             if ('sizeQrcode' in params):
                 size = int(params['sizeQrcode'])
             resizeAndGetCodes(size)
