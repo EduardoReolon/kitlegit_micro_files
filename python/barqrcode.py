@@ -74,14 +74,15 @@ def decodeImg(img, params):
                         {'data': barcode['text'], 'type': barcode['type']})
 
     # try first with reduced size
-    size = 1000
-    maxDim = max([img.shape[0], img.shape[1]])
-    coef = min([1, size / maxDim])
-    im = img
-    if (coef < 1):
-        im = cv2.resize(
-            img, (0, 0), fx=coef, fy=coef, interpolation=cv2.INTER_AREA)
-    getCodes(im, False)
+    def resizeAndGetCodes(size: int = 1000):
+        maxDim = max([img.shape[0], img.shape[1]])
+        coef = min([1, size / maxDim])
+        im = img
+        if (coef < 1):
+            im = cv2.resize(
+                img, (0, 0), fx=coef, fy=coef, interpolation=cv2.INTER_AREA)
+        getCodes(im, False)
+    resizeAndGetCodes()
 
     if params['hasBarcode'] == 'true':
         barcodeFound = False
@@ -90,5 +91,15 @@ def decodeImg(img, params):
                 barcodeFound = True
         if barcodeFound == False:
             getCodes(img, False)
+    elif params['hasQrcode'] == 'true':
+        qrcodeFound = False
+        for code in values:
+            if code['type'] != 'qr':
+                qrcodeFound = True
+        if qrcodeFound == False:
+            size = 1500
+            if ('sizeQrcode' in params):
+                size = int(params['sizeQrcode'])
+            resizeAndGetCodes(size)
 
     return values
