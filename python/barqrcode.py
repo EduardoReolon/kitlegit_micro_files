@@ -21,7 +21,7 @@ def decodeImg(img, params):
     #         if code.data != '':
     #             values.append({'data': code.data, 'type': code.type})
 
-    imgIndex = randrange(20)
+    imgIndex = randrange(200, 249)
     fileName = 'storage/img' + str(imgIndex) + '.jpg'
     fileNameFull = f'python/{fileName}' if os.path.exists(
         'python') else fileName

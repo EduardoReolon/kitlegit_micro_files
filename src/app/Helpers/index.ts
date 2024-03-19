@@ -4,9 +4,10 @@ import Log from "../services/log";
 const fs = require('fs');
 import { htmlToPdf } from 'convert-to-pdf'; // https://github.com/sankalpkataria/to-pdf
 import sharp from "sharp";
-import { awsS3StorageClasses } from "../interfaces";
+import { awsS3StorageClasses, enginesTypes } from "../interfaces";
 import Jimp from 'jimp';
 import Python from "../services/python";
+import Api from "../services/api";
 
 let imgIndex = 0;
 
@@ -210,10 +211,11 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact}: {
+    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine}: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
     coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
-    hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean
+    hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
+    engine: enginesTypes
   }) {
     const args = [
       '--target img',
@@ -232,16 +234,28 @@ export default class Helpers {
     args.push(`--hasQrcode ${!!hasQrcode}`);
     args.push(`--hasBarcode ${!!hasBarcode}`);
     args.push(`--hasFact ${!!hasFact}`);
+    if (engine) args.push(`--engine ${engine}`);
     const {stdout, stderr } = await Python.call({args});
 
-    imgIndex = imgIndex === 9 ? 0 : imgIndex + 1;
+    imgIndex = imgIndex === 49 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
     const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[]} = {barcodes: [], qrcodes: [], facts: []};
 
     try {
       if (stdout && stdout.length) {
-        const obj = JSON.parse(stdout) as {barqrcodes: {data: string, type: 'QRCODE' | 'qr' | 'CODE128' | 'anyOther'}[], facts: string[]};
+        const obj = JSON.parse(stdout) as {barqrcodes: {
+          data: string, type: 'QRCODE' | 'qr' | 'CODE128' | 'anyOther'}[],
+          facts: string[],
+          params: {
+            imgPath: string // relative path, inside folder python
+          }
+        };
+
+        if (engine && engine !== 'local') {
+          obj.facts = await Api.factFromAPI({engine, absPath: Helpers.appRoot(`python/${obj.params.imgPath}`)})
+        }
+
         const qrCodesTypes = ['QRCODE', 'pdf417', 'qr', 'datamatrix']
         for (const barQr of obj.barqrcodes) {
           if (qrCodesTypes.includes(barQr.type)) {

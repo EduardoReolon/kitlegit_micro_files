@@ -21,11 +21,14 @@ def downloadAsCv2(params):
     isExist = os.path.exists(storageFolder)
     if not isExist:
         os.makedirs(storageFolder)
-    # if ('imgIndex' not in params):
-    #     params['imgIndex'] = '0'
-    # params['imgPath'] = 'storage/img' + params['imgIndex'] + '.jpg'
-    # open(file='storage/img' +
-    #      params['imgIndex'] + '.jpg', mode="wb").write(buffer)
+
+    # write the file in disk, to be used for node
+    # python is better in resizing
+    if ('imgIndex' not in params):
+        params['imgIndex'] = '0'
+    params['imgPath'] = 'storage/img' + params['imgIndex'] + '.jpg'
+    open(file='storage/img' +
+         params['imgIndex'] + '.jpg', mode="wb").write(buffer)
 
     nparr = np.frombuffer(buffer, np.uint8)
     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
