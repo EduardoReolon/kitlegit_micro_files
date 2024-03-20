@@ -211,11 +211,11 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine}: {
+    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb}: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
     coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
     hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
-    engine: enginesTypes
+    engine: enginesTypes, maxSizeKb: number
   }) {
     const args = [
       '--target img',
@@ -235,6 +235,8 @@ export default class Helpers {
     args.push(`--hasBarcode ${!!hasBarcode}`);
     args.push(`--hasFact ${!!hasFact}`);
     if (engine) args.push(`--engine ${engine}`);
+    if (maxSizeKb) args.push(`--maxSizeKb ${maxSizeKb}`);
+
     const {stdout, stderr } = await Python.call({args});
 
     imgIndex = imgIndex === 49 ? 0 : imgIndex + 1;

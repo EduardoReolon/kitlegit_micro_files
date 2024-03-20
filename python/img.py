@@ -27,7 +27,7 @@ def resizeCore(img, params):
 
 def dataExtraction(params):
     img = downloadAsCv2(params)
-    if (params['hasQrcode'] == 'true' or params['hasBarcode'] == 'true'):
+    if (('hasQrcode' in params and params['hasQrcode'] == 'true') or ('hasBarcode' in params and params['hasBarcode'] == 'true')):
         barqrcodes = barqrcode.decodeImg(img, params)
     else:
         barqrcodes = []
@@ -36,7 +36,7 @@ def dataExtraction(params):
         img = resizeCore(img, params)
 
     facts = []
-    if (params['hasFact'] == 'true'):
+    if (('hasFact' in params and params['hasFact'] == 'true')):
         if ('engine' not in params or params['engine'] == 'local'):
             if (params['easyocr'] == '1'):
                 facts = ocr.decodeImgEasyocr(img, params)
