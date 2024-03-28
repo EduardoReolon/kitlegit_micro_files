@@ -8,6 +8,7 @@ export default class Api {
     public static settings: {
         ocrspace: {
             key: string
+            url: string
         }
     }
 
@@ -24,7 +25,7 @@ export default class Api {
     
             var options = {
                 protocol: 'https:',
-                hostname: 'api.ocr.space',
+                hostname: Api.settings.ocrspace.url,
                 port: 443,
                 path: '/parse/image',
                 method: 'POST',
