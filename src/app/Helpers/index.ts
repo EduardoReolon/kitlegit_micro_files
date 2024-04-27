@@ -211,11 +211,11 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb}: {
+    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx}: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
     coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
     hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
-    engine: enginesTypes, maxSizeKb: number
+    engine: enginesTypes, maxSizeKb: number, maxSizePx: number
   }) {
     const args = [
       '--target img',
@@ -235,7 +235,8 @@ export default class Helpers {
     args.push(`--hasBarcode ${!!hasBarcode}`);
     args.push(`--hasFact ${!!hasFact}`);
     if (engine) args.push(`--engine ${engine}`);
-    if (maxSizeKb) args.push(`--maxSizeKb ${maxSizeKb}`);
+    if (engine === 'ocrspace' && maxSizeKb) args.push(`--maxSizeKb ${maxSizeKb}`);
+    if (engine === 'azure' && maxSizePx) args.push(`--maxSizePx ${maxSizePx}`);
 
     const {stdout, stderr } = await Python.call({args});
 
@@ -251,11 +252,12 @@ export default class Helpers {
           facts: string[],
           params: {
             imgPath: string // relative path, inside folder python
+            rootFolder: string // relative path of python execution
           }
         };
 
         if (engine && engine !== 'local') {
-          obj.facts = await Api.factFromAPI({engine, absPath: Helpers.appRoot(`python/${obj.params.imgPath}`)})
+          obj.facts = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`})
         }
 
         const qrCodesTypes = ['QRCODE', 'pdf417', 'qr', 'datamatrix']

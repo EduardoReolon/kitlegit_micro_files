@@ -30,14 +30,27 @@ def downloadAsCv2(params):
     open(params['imgPath'], mode="wb").write(buffer)
     # resizing
     if ('maxSizeKb' in params):
-        fileSize = os.path.getsize(params['imgPath'])
         maxSizeKb = int(params['maxSizeKb']) * 1000
-        while (fileSize > maxSizeKb):
-            img = cv2.imread(params['imgPath'])
+    else: maxSizeKb = 20000000 # 20Mb
+
+    if ('maxSizePx' in params):
+        img = cv2.imread(params['imgPath'])
+        maxDim = max([img.shape[0], img.shape[1]])
+        coef = min([1, int(params['maxSizePx']) / maxDim])
+        if (coef < 1):
             img = cv2.resize(
-                img, (0, 0), fx=0.95, fy=0.95, interpolation=cv2.INTER_AREA)
-            cv2.imwrite(params['imgPath'], img)
-            fileSize = os.path.getsize(params['imgPath'])
+                img, (0, 0), fx=coef, fy=coef, interpolation=cv2.INTER_AREA)
+        cv2.imwrite(params['imgPath'], img)
+
+    fileSize = os.path.getsize(params['imgPath'])
+    params['rootFolder'] = os.getcwd()
+    while (fileSize > maxSizeKb):
+        img = cv2.imread(params['imgPath'])
+        img = cv2.resize(
+            img, (0, 0), fx=0.95, fy=0.95, interpolation=cv2.INTER_AREA)
+        cv2.imwrite(params['imgPath'], img)
+        print(maxSizeKb, fileSize, params['imgPath'])
+        fileSize = os.path.getsize(params['imgPath'])
 
     nparr = np.frombuffer(buffer, np.uint8)
     return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
