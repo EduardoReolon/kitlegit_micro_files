@@ -243,7 +243,7 @@ export default class Helpers {
     imgIndex = imgIndex === 49 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
-    const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[]} = {barcodes: [], qrcodes: [], facts: []};
+    const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[], laplacian?: number} = {barcodes: [], qrcodes: [], facts: []};
 
     try {
       if (stdout && stdout.length) {
@@ -253,8 +253,10 @@ export default class Helpers {
           params: {
             imgPath: string // relative path, inside folder python
             rootFolder: string // relative path of python execution
+            laplacian: number
           }
         };
+        dataReturn.laplacian = obj.params.laplacian;
 
         if (engine && engine !== 'local') {
           obj.facts = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`})

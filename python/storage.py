@@ -49,7 +49,7 @@ def downloadAsCv2(params):
         img = cv2.resize(
             img, (0, 0), fx=0.95, fy=0.95, interpolation=cv2.INTER_AREA)
         cv2.imwrite(params['imgPath'], img)
-        print(maxSizeKb, fileSize, params['imgPath'])
+        # print(maxSizeKb, fileSize, params['imgPath'])
         fileSize = os.path.getsize(params['imgPath'])
 
     nparr = np.frombuffer(buffer, np.uint8)
