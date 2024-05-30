@@ -18,13 +18,16 @@ export default class Api {
         }
     }
 
-    static async ocrSpace(formData: FormData) {
+    static async ocrSpace(formData: FormData, getJapaneseChars?: boolean) {
         const facts: string[] = [];
     
         await new Promise((resolve) => {
             // https://ocr.space/ocrapi
-            formData.append('OCREngine', 2);
-    
+            if (getJapaneseChars) {
+                formData.append('OCREngine', 1);
+                formData.append('language', 'jpn');
+            } else formData.append('OCREngine', 2);
+
             var options = {
                 protocol: 'https:',
                 hostname: Api.settings.ocrspace.url,
@@ -155,15 +158,26 @@ export default class Api {
         return facts;
     }
 
-    static async factFromAPI({ engine, absPath }: { engine: enginesTypes, absPath: string }): Promise<string[]> {
+    static async factFromAPI({ engine, absPath, getJapaneseChars }: { engine: enginesTypes, absPath: string, getJapaneseChars?: boolean }): Promise<{facts: string[], factsJa: string[]}> {
+        const file = fs.createReadStream(absPath);
+        
         const formData = new FormData();
-        formData.append('file', fs.createReadStream(absPath), {
-            contentType: 'image/jpg'
-        });
+        formData.append('file', file, {contentType: 'image/jpg'});
+        const formDataJa = new FormData();
+        formDataJa.append('file', file, {contentType: 'image/jpg'});
 
-        if (engine === 'ocrspace') return await Api.ocrSpace(formData);
-        if (engine === 'azure') return await Api.azureOCR(formData);
+        if (engine === 'ocrspace') {
+            return {
+                facts: await Api.ocrSpace(formData),
+                factsJa: getJapaneseChars ? await Api.ocrSpace(formDataJa, getJapaneseChars) : [],
+            }
+        } if (engine === 'azure') {
+            return {
+                facts: await Api.azureOCR(formData),
+                factsJa: getJapaneseChars ? await Api.ocrSpace(formDataJa, getJapaneseChars) : [],
+            }
+        }
 
-        return [];
+        return {facts: [], factsJa: []};
     }
 }

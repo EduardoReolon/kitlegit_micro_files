@@ -211,11 +211,13 @@ export default class Helpers {
   }
 
   static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx}: {
+    tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx,
+    getJapaneseChars
+  }: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
     coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
     hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
-    engine: enginesTypes, maxSizeKb: number, maxSizePx: number
+    engine: enginesTypes, maxSizeKb: number, maxSizePx: number, getJapaneseChars?: boolean
   }) {
     const args = [
       '--target img',
@@ -243,13 +245,14 @@ export default class Helpers {
     imgIndex = imgIndex === 49 ? 0 : imgIndex + 1;
     if (stderr) new Log({ route: 'getDataFromPhoto' }).setError(stderr).save();
 
-    const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[], laplacian?: number} = {barcodes: [], qrcodes: [], facts: []};
+    const dataReturn: {barcodes: string[], qrcodes: string[], facts: string[], factsJa: string[], laplacian?: number} = {barcodes: [], qrcodes: [], facts: [], factsJa: []};
 
     try {
       if (stdout && stdout.length) {
         const obj = JSON.parse(stdout) as {barqrcodes: {
           data: string, type: 'QRCODE' | 'qr' | 'CODE128' | 'anyOther'}[],
           facts: string[],
+          factsJa: string[],
           params: {
             imgPath: string // relative path, inside folder python
             rootFolder: string // relative path of python execution
@@ -259,7 +262,9 @@ export default class Helpers {
         dataReturn.laplacian = obj.params.laplacian;
 
         if (engine && engine !== 'local') {
-          obj.facts = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`})
+          const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`, getJapaneseChars})
+          obj.facts = returnAPI.facts;
+          obj.factsJa = returnAPI.factsJa;
         }
 
         const qrCodesTypes = ['QRCODE', 'pdf417', 'qr', 'datamatrix']
@@ -272,6 +277,9 @@ export default class Helpers {
         }
         for (const fact of obj.facts) {
           if (fact.length) dataReturn.facts.push(fact.replace(/\n/g, ' '));
+        }
+        for (const factJa of obj.factsJa) {
+          if (factJa.length) dataReturn.factsJa.push(factJa.replace(/\n/g, ' '));
         }
       }
     } catch (error) {
