@@ -159,25 +159,21 @@ export default class Api {
     }
 
     static async factFromAPI({ engine, absPath, getJapaneseChars }: { engine: enginesTypes, absPath: string, getJapaneseChars?: boolean }): Promise<{facts: string[], factsJa: string[]}> {
-        // const file = fs.createReadStream(absPath);
-        
+        let facts: string[] = [];
+        let factsJa: string[] = [];
+
         const formData = new FormData();
         formData.append('file', fs.createReadStream(absPath), {contentType: 'image/jpg'});
-        const formDataJa = new FormData();
-        formDataJa.append('file', fs.createReadStream(absPath), {contentType: 'image/jpg'});
-
-        if (engine === 'ocrspace') {
-            return {
-                facts: await Api.ocrSpace(formData),
-                factsJa: getJapaneseChars ? await Api.ocrSpace(formDataJa, getJapaneseChars) : [],
-            }
-        } if (engine === 'azure') {
-            return {
-                facts: await Api.azureOCR(formData),
-                factsJa: getJapaneseChars ? await Api.ocrSpace(formDataJa, getJapaneseChars) : [],
-            }
+        
+        if (engine === 'ocrspace') facts = await Api.ocrSpace(formData);
+        if (engine === 'azure') facts = await Api.azureOCR(formData);
+        
+        if (getJapaneseChars) {
+            const formDataJa = new FormData();
+            formDataJa.append('file', fs.createReadStream(absPath), {contentType: 'image/jpg'});
+            factsJa = await Api.ocrSpace(formDataJa, getJapaneseChars);
         }
 
-        return {facts: [], factsJa: []};
+        return {facts, factsJa};
     }
 }
