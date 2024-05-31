@@ -1,5 +1,5 @@
 import { HttpContextContract, middlewareContract } from "../../contracts/requestsContracts";
-import Log from "../services/log";
+// import Log from "../services/log";
 
 export default class ProcessKill implements middlewareContract {
   priority = 2;
@@ -34,32 +34,32 @@ export default class ProcessKill implements middlewareContract {
   //   }
   // }
 
-  static gracefulShutdown() {
-    new Log({route: 'processKill middleware - processStarted'}).setSideData({processesCount: ProcessKill.processesCount}).save();
-    ProcessKill.server.close(() => {
-      console.log('HTTP server closed');
-      // Close database connections and perform other cleanup tasks here
-      process.exit(0);
-    });
+  // static gracefulShutdown() {
+  //   new Log({route: 'processKill middleware - processStarted'}).setSideData({processesCount: ProcessKill.processesCount}).save();
+  //   ProcessKill.server.close(() => {
+  //     console.log('HTTP server closed');
+  //     // Close database connections and perform other cleanup tasks here
+  //     process.exit(0);
+  //   });
   
-    // Forcefully shut down after 30 seconds if not graceful
-    setTimeout(() => {
-      console.error('Forcing shutdown');
-      process.exit(1);
-    }, 30000);
-  }
+  //   // Forcefully shut down after 30 seconds if not graceful
+  //   setTimeout(() => {
+  //     console.error('Forcing shutdown');
+  //     process.exit(1);
+  //   }, 30000);
+  // }
 
   public async handle({server}: HttpContextContract, next: () => Promise<void>) {
-    ProcessKill.server = server;
-    try {
-      // this.processesAdd();
-      await next();
-    } catch (error) {
-      throw error;
-    } finally {
-      // await ProcessKill.processesRemove();
-    }
+    // ProcessKill.server = server;
+    // try {
+    //   // this.processesAdd();
+    //   await next();
+    // } catch (error) {
+    //   throw error;
+    // } finally {
+    //   // await ProcessKill.processesRemove();
+    // }
   }
 }
 
-process.on('SIGINT', ProcessKill.gracefulShutdown);
+// process.on('SIGINT', ProcessKill.gracefulShutdown);
