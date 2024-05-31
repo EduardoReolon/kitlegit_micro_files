@@ -8,10 +8,10 @@ export default class ProcessKill implements middlewareContract {
   static blockIncoming: boolean = false;
   static processesCount: number = 0;
 
-  static startKill() {
+  static async startKill() {
     ProcessKill.toKill = true;
     new Log({route: 'processKill middleware - processAdd'}).setSideData({processesCount: ProcessKill.processesCount}).save();
-    ProcessKill.processesRemove(0);
+    await ProcessKill.processesRemove(0);
   }
 
   processesAdd() {
@@ -22,23 +22,25 @@ export default class ProcessKill implements middlewareContract {
     ProcessKill.processesCount += 1;
   }
 
-  static processesRemove(value: number = 1) {
+  static async processesRemove(value: number = 1) {
     ProcessKill.processesCount -= value;
     if (ProcessKill.toKill && ProcessKill.processesCount < 1) {
       ProcessKill.blockIncoming = true;
       new Log({route: 'processKill middleware - processRemove'}).save();
-      setTimeout(() => process.exit(0), 200);
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Aguarda 200ms
+      // setTimeout(() => process.exit(0), 200);
+      process.exit(0);
     }
   }
 
   public async handle({}: HttpContextContract, next: () => Promise<void>) {
-    this.processesAdd();
     try {
+      this.processesAdd();
       await next();
-      ProcessKill.processesRemove();
     } catch (error) {
-      ProcessKill.processesRemove();
       throw error;
+    } finally {
+      await ProcessKill.processesRemove();
     }
   }
 }
