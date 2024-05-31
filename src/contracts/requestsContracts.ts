@@ -32,7 +32,8 @@ export interface newRequestContract {
   path: string,
   body: any,
   query: {[key: string]: string}
-  files: filesHandler
+  files: filesHandler,
+  server: any
 }
 
 export interface routeContract {

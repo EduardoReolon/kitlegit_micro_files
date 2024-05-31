@@ -86,6 +86,7 @@ class HttpContext implements HttpContextContract {
   body: any;
   query: {[key: string]: string};
   files: filesHandler;
+  server: any;
 
   response: httpResponseContract;
   request: httpRequestContract;
@@ -107,6 +108,7 @@ class HttpContext implements HttpContextContract {
     this.body = newRequest.body;
     this.query = newRequest.query;
     this.files = newRequest.files;
+    this.server = newRequest.server;
 
     this.response = httpResponse;
     this.request = httpRequest;
@@ -124,8 +126,9 @@ export default class NewRequest implements newRequestContract {
   body: any;
   query: {[key: string]: string};
   files: filesHandler;
+  server: any;
 
-  constructor({req, res, method, contentType, contentTypeParams, path, body, query, files}: newRequestContract) {
+  constructor({req, res, method, contentType, contentTypeParams, path, body, query, files, server}: newRequestContract) {
     this.req = req;
     this.res = res;
     this.method = method;
@@ -135,6 +138,7 @@ export default class NewRequest implements newRequestContract {
     this.body = body;
     this.query = query;
     this.files = files;
+    this.server = server;
   }
 
   async launch(): Promise<any> {
@@ -182,6 +186,7 @@ export default class NewRequest implements newRequestContract {
           body: this.body,
           query: this.query,
           files: this.files,
+          server: this.server,
         },
         new HttpResponse(),
         new HttpRequest({req: this.req, contentType: this.contentType, body: this.body, query: this.query, files: this.files}),

@@ -36,6 +36,10 @@ export default async function ({dir, filesMiddleware, startRoutes}:
   await startRoutes();
   const NewRequest = (await import('./newrequesthandler')).default;
 
+  const server = app.listen(env.PORT, () => {
+    console.log(`Listening on port ${env.PORT}`)
+  })
+
   app.all('*', async (req: any, res: any) => {
     const contentTypeArray: [headerContentTypes, string | undefined] = (req.headers['content-type'] || '').split('; ');
 
@@ -48,10 +52,7 @@ export default async function ({dir, filesMiddleware, startRoutes}:
       body: req.body,
       query: req.query,
       files: req.files,
+      server
     }).launch();
-  })
-
-  app.listen(env.PORT, () => {
-    console.log(`Listening on port ${env.PORT}`)
   })
 }
