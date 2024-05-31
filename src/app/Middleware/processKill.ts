@@ -50,6 +50,7 @@ export default class ProcessKill implements middlewareContract {
   // }
 
   public async handle({server}: HttpContextContract, next: () => Promise<void>) {
+    await next();
     // ProcessKill.server = server;
     // try {
     //   // this.processesAdd();
