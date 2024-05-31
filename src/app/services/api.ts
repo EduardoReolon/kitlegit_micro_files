@@ -159,12 +159,12 @@ export default class Api {
     }
 
     static async factFromAPI({ engine, absPath, getJapaneseChars }: { engine: enginesTypes, absPath: string, getJapaneseChars?: boolean }): Promise<{facts: string[], factsJa: string[]}> {
-        const file = fs.createReadStream(absPath);
+        // const file = fs.createReadStream(absPath);
         
         const formData = new FormData();
-        formData.append('file', file, {contentType: 'image/jpg'});
+        formData.append('file', fs.createReadStream(absPath), {contentType: 'image/jpg'});
         const formDataJa = new FormData();
-        formDataJa.append('file', file, {contentType: 'image/jpg'});
+        formDataJa.append('file', fs.createReadStream(absPath), {contentType: 'image/jpg'});
 
         if (engine === 'ocrspace') {
             return {

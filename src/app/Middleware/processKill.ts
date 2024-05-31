@@ -50,9 +50,9 @@ export default class ProcessKill implements middlewareContract {
   // }
 
   public async handle({server}: HttpContextContract, next: () => Promise<void>) {
-    new Log({route: 'processKill antes'}).setSideData({processesCount: ProcessKill.processesCount}).save();
+    // new Log({route: 'processKill antes'}).setSideData({processesCount: ProcessKill.processesCount}).save();
     await next();
-    new Log({route: 'processKill depois'}).setSideData({processesCount: ProcessKill.processesCount}).save();
+    // new Log({route: 'processKill depois'}).setSideData({processesCount: ProcessKill.processesCount}).save();
     // ProcessKill.server = server;
     // try {
     //   // this.processesAdd();

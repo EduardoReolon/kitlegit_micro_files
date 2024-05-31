@@ -32,9 +32,9 @@ export default class AuthMiddleware implements middlewareContract {
     if (putOnHold) await nextForQueue;
 
     try {
-      new Log({route: 'queue antes'}).save();
+      // new Log({route: 'queue antes'}).save();
       await next();
-      new Log({route: 'queue depois'}).save();
+      // new Log({route: 'queue depois'}).save();
       this.requestFinished();
     } catch (error) {
       this.requestFinished();
