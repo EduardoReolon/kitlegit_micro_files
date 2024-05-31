@@ -1,4 +1,5 @@
 import { HttpContextContract, middlewareContract } from "../../contracts/requestsContracts";
+import Log from "../services/log";
 
 const queue: {
   called: boolean,
@@ -31,7 +32,9 @@ export default class AuthMiddleware implements middlewareContract {
     if (putOnHold) await nextForQueue;
 
     try {
+      new Log({route: 'queue antes'}).save();
       await next();
+      new Log({route: 'queue depois'}).save();
       this.requestFinished();
     } catch (error) {
       this.requestFinished();

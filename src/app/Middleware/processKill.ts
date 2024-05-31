@@ -1,5 +1,5 @@
 import { HttpContextContract, middlewareContract } from "../../contracts/requestsContracts";
-// import Log from "../services/log";
+import Log from "../services/log";
 
 export default class ProcessKill implements middlewareContract {
   priority = 2;
@@ -50,7 +50,9 @@ export default class ProcessKill implements middlewareContract {
   // }
 
   public async handle({server}: HttpContextContract, next: () => Promise<void>) {
+    new Log({route: 'processKill antes'}).setSideData({processesCount: ProcessKill.processesCount}).save();
     await next();
+    new Log({route: 'processKill depois'}).setSideData({processesCount: ProcessKill.processesCount}).save();
     // ProcessKill.server = server;
     // try {
     //   // this.processesAdd();
