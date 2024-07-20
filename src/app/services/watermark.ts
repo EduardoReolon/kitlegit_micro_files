@@ -56,9 +56,9 @@ export default class Watermark {
         svgStr = `<svg width="${(800 / 220 * sizeQRCode).toFixed(0)}" height="${(350 / 220 * sizeQRCode).toFixed(0)}" xmlns="http://www.w3.org/2000/svg">
             <text x="${(240 / 220 * sizeQRCode).toFixed(0)}px" y="${(60 / 220 * sizeQRCode).toFixed(0)}px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
             <text x="${(240 / 220 * sizeQRCode).toFixed(0)}px" y="${(140 / 220 * sizeQRCode).toFixed(0)}px" fill="#${color}" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">${check_status_text}</text>
-            <text x="0" y="${(215 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
-            <text x="0" y="${(245 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
-            <text x="0" y="${(275 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
+            <text x="0" y="${(215 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:${(20 / 220 * sizeQRCode).toFixed(0)}px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
+            <text x="0" y="${(245 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:${(20 / 220 * sizeQRCode).toFixed(0)}px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
+            <text x="0" y="${(275 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:${(20 / 220 * sizeQRCode).toFixed(0)}px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
             <style>
               <![CDATA[text {font: ${(80 / 220 * sizeQRCode).toFixed(0)}px bold Verdana, Helvetica, Arial, sans-serif;}]]>
             </style>
