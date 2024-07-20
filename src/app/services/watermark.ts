@@ -16,6 +16,9 @@ export default class Watermark {
     try {
       const main = await Helpers.readImgSharp({relPath});
       const metaMain = await main.metadata();
+      
+      sizeQRCode = Math.floor(sizeQRCode / 1920 * (metaMain.width || 1920));
+      
       const {data: qrCode, info} = await (await Helpers.readImgSharp({relPath: watermarkRelPath}))
         .resize(sizeQRCode)
         // .composite([
@@ -104,10 +107,9 @@ export default class Watermark {
         const {data: sharpGradient} = await Helpers.sharpFromBuffer(bufferGradient)
           .toBuffer({resolveWithObject: true});
         compositeExtras.push({input: sharpGradient, left: 0, top: 0});
-
       }
 
-      const bufferKitLog = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="200px" height="80px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+      const bufferKitLog = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="${(200 / 178 * sizeQRCode).toFixed(0)}px" height="${(80 / 178 * sizeQRCode).toFixed(0)}px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
         viewBox="0 0 37.64 9.89"
         xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
