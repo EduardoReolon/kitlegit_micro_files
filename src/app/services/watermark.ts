@@ -17,7 +17,8 @@ export default class Watermark {
       const main = await Helpers.readImgSharp({relPath});
       const metaMain = await main.metadata();
       
-      sizeQRCode = Math.floor(sizeQRCode / 1920 * (metaMain.width || 1920));
+      sizeQRCode = Math.floor(sizeQRCode / 1500 * (metaMain.width || 1920));
+      padding = Math.floor(padding / 1500 * (metaMain.width || 1920));
       
       const {data: qrCode, info} = await (await Helpers.readImgSharp({relPath: watermarkRelPath}))
         .resize(sizeQRCode)
@@ -49,17 +50,17 @@ export default class Watermark {
           </style>
         </svg>`;
       else {
-        paddingYQRCode = 100;
+        paddingYQRCode = Math.floor(100 / 220 * sizeQRCode);
         const color = check_status === 'Authentic' ? 'DDFD71' : 'DC5048';
         const check_status_text = check_status;
-        svgStr = `<svg width="800" height="350" xmlns="http://www.w3.org/2000/svg">
-            <text x="240px" y="60px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
-            <text x="240px" y="140px" fill="#${color}" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">${check_status_text}</text>
-            <text x="0" y="215px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
-            <text x="0" y="245px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
-            <text x="0" y="275px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
+        svgStr = `<svg width="${(800 / 220 * sizeQRCode).toFixed(0)}" height="${(350 / 220 * sizeQRCode).toFixed(0)}" xmlns="http://www.w3.org/2000/svg">
+            <text x="${(240 / 220 * sizeQRCode).toFixed(0)}px" y="${(60 / 220 * sizeQRCode).toFixed(0)}px" fill="white" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">Certified</text>
+            <text x="${(240 / 220 * sizeQRCode).toFixed(0)}px" y="${(140 / 220 * sizeQRCode).toFixed(0)}px" fill="#${color}" dominant-baseline="hanging" text-anchor="left" style="font-weight: 800;">${check_status_text}</text>
+            <text x="0" y="${(215 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${brandTeamYear}</text>
+            <text x="0" y="${(245 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">${dateUser}</text>
+            <text x="0" y="${(275 / 220 * sizeQRCode).toFixed(0)}px" fill="white" style="font-size:20px;" dominant-baseline="auto" text-anchor="left">ID: ${product_id?.toString().padStart(6, '0')}</text>
             <style>
-              <![CDATA[text {font: 80px bold Verdana, Helvetica, Arial, sans-serif;}]]>
+              <![CDATA[text {font: ${(80 / 220 * sizeQRCode).toFixed(0)}px bold Verdana, Helvetica, Arial, sans-serif;}]]>
             </style>
           </svg>`;
 
