@@ -42,48 +42,48 @@ export default class Api {
             };
     
             var req = https.request(options, (res) => {
-                try {
-                    res.on('data', (d) => {
-                        let result;
-                        try {
-                            result = JSON.parse(d) as {
-                                ParsedResults: {
-                                    TextOverlay: {
-                                        Lines: any[],
-                                        HasOverlay: boolean,
-                                        Message: "Text overlay is not provided as it is not requested"
-                                    },
-                                    TextOrientation: "0",
-                                    FileParseExitCode: 1,
-                                    ParsedText: string,
-                                    ErrorMessage: string,
-                                    ErrorDetails: string
-                                }[],
-                                OCRExitCode: 1 | 3,
-                                ErrorMessage: [
-                                    string
-                                ],
-                                ErrorDetails: string,
-                                IsErroredOnProcessing: boolean,
-                                ProcessingTimeInMilliseconds: number, // integer
-                                SearchablePDFURL: "Searchable PDF not generated as it was not requested."
-                            };
-                        } catch (error) {
-                            new Log({route: 'services/api parsing body'}).setSideData({body: d}).save();
-                            console.log(d);
-                            throw error;
-                        }
+                let responseData = '';
+
+                // Acumula dados da resposta
+                res.on('data', (chunk) => {
+                    responseData += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const result = JSON.parse(responseData) as {
+                            ParsedResults: {
+                                TextOverlay: {
+                                    Lines: any[],
+                                    HasOverlay: boolean,
+                                    Message: "Text overlay is not provided as it is not requested"
+                                },
+                                TextOrientation: "0",
+                                FileParseExitCode: 1,
+                                ParsedText: string,
+                                ErrorMessage: string,
+                                ErrorDetails: string
+                            }[],
+                            OCRExitCode: 1 | 3,
+                            ErrorMessage: [
+                                string
+                            ],
+                            ErrorDetails: string,
+                            IsErroredOnProcessing: boolean,
+                            ProcessingTimeInMilliseconds: number, // integer
+                            SearchablePDFURL: "Searchable PDF not generated as it was not requested."
+                        };
     
                         if (result.OCRExitCode === 1) facts.push(...(result.ParsedResults.map((r) => r.ParsedText)));
     
                         new Log({route: 'Returning from OCR space'}).setResponse({response: JSON.stringify(result)}).save();
-                    });
+                        resolve('');
+                    } catch (error) {
+                        new Log({route: 'Try catch return from OCR space'}).setError(error as Error).save();
+                        resolve('');
+                    }
+                });
     
-                    resolve('');
-                } catch (error) {
-                    new Log({route: 'Try catch return from OCR space'}).setError(error as Error).save();
-                    resolve('');
-                }
             });
     
             req.on('error', (e) => {
