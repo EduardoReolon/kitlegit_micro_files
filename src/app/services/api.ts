@@ -70,6 +70,7 @@ export default class Api {
                             };
                         } catch (error) {
                             new Log({route: 'services/api parsing body'}).setSideData({body: d}).save();
+                            console.log(d);
                             throw error;
                         }
     
