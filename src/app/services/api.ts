@@ -44,28 +44,34 @@ export default class Api {
             var req = https.request(options, (res) => {
                 try {
                     res.on('data', (d) => {
-                        const result = JSON.parse(d) as {
-                            ParsedResults: {
-                                TextOverlay: {
-                                    Lines: any[],
-                                    HasOverlay: boolean,
-                                    Message: "Text overlay is not provided as it is not requested"
-                                },
-                                TextOrientation: "0",
-                                FileParseExitCode: 1,
-                                ParsedText: string,
-                                ErrorMessage: string,
-                                ErrorDetails: string
-                            }[],
-                            OCRExitCode: 1 | 3,
-                            ErrorMessage: [
-                                string
-                            ],
-                            ErrorDetails: string,
-                            IsErroredOnProcessing: boolean,
-                            ProcessingTimeInMilliseconds: number, // integer
-                            SearchablePDFURL: "Searchable PDF not generated as it was not requested."
-                        };
+                        let result;
+                        try {
+                            result = JSON.parse(d) as {
+                                ParsedResults: {
+                                    TextOverlay: {
+                                        Lines: any[],
+                                        HasOverlay: boolean,
+                                        Message: "Text overlay is not provided as it is not requested"
+                                    },
+                                    TextOrientation: "0",
+                                    FileParseExitCode: 1,
+                                    ParsedText: string,
+                                    ErrorMessage: string,
+                                    ErrorDetails: string
+                                }[],
+                                OCRExitCode: 1 | 3,
+                                ErrorMessage: [
+                                    string
+                                ],
+                                ErrorDetails: string,
+                                IsErroredOnProcessing: boolean,
+                                ProcessingTimeInMilliseconds: number, // integer
+                                SearchablePDFURL: "Searchable PDF not generated as it was not requested."
+                            };
+                        } catch (error) {
+                            new Log({route: 'services/api parsing body'}).setSideData({body: d}).save();
+                            throw error;
+                        }
     
                         if (result.OCRExitCode === 1) facts.push(...(result.ParsedResults.map((r) => r.ParsedText)));
     
