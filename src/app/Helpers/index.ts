@@ -210,13 +210,13 @@ export default class Helpers {
     }
   }
 
-  static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
+  static async getDataFromPhoto({relPath, resizedRelPath, maxResolution, coefWidth, coefHight, angles,
     tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx,
     getJapaneseChars
   }: {
     relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
     coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
-    hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
+    angles: number[], hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean,
     engine: enginesTypes, maxSizeKb: number, maxSizePx: number, getJapaneseChars?: boolean
   }) {
     const args = [
@@ -233,6 +233,7 @@ export default class Helpers {
     if (anglesCount) args.push(`--anglesCount ${anglesCount}`);
     if (maxResolution) args.push(`--maxResolution ${maxResolution}`);
     if (resizedRelPath) args.push(`--resizedRelPath ${resizedRelPath}`);
+    if (angles) args.push(`--angles ${JSON.stringify(angles)}`);
     args.push(`--hasQrcode ${!!hasQrcode}`);
     args.push(`--hasBarcode ${!!hasBarcode}`);
     args.push(`--hasFact ${!!hasFact}`);
@@ -265,6 +266,11 @@ export default class Helpers {
           const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`, getJapaneseChars})
           obj.facts = returnAPI.facts;
           obj.factsJa = returnAPI.factsJa;
+          for (const angle of angles || []) {
+            const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath.replace(/.jpg$/, `_r${angle}.jpg`)}`, getJapaneseChars})
+            obj.facts.push(...returnAPI.facts);
+            obj.factsJa.push(...returnAPI.factsJa);
+          }
         }
 
         const qrCodesTypes = ['QRCODE', 'pdf417', 'qr', 'datamatrix']

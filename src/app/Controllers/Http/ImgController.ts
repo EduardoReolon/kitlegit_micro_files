@@ -39,18 +39,18 @@ export default class {
 
   public async getData({request, response}: HttpContextContract) {
     const {relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-      tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx,
+      tesseract, size, sizeQrcode, anglesCount, angles, hasQrcode, hasBarcode, hasFact, engine, maxSizeKb, maxSizePx,
       getJapaneseChars
     } = request.all() as {
       relPath: string, resizedRelPath?: string, maxResolution?: number, coefWidth: number,
       coefHight: number, tesseract: boolean, size: number, sizeQrcode: number, anglesCount: number,
-      hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean, engine: enginesTypes,
+      angles: number[], hasQrcode?: boolean, hasBarcode?: boolean, hasFact?: boolean, engine: enginesTypes,
       maxSizeKb: number, maxSizePx: number, getJapaneseChars?: boolean
     };
 
     response.status(200).send(await Helpers.getDataFromPhoto({
       relPath, resizedRelPath, maxResolution, coefWidth, coefHight,
-      tesseract, size, sizeQrcode, anglesCount, hasQrcode, hasBarcode, hasFact, engine,
+      tesseract, size, sizeQrcode, anglesCount, angles, hasQrcode, hasBarcode, hasFact, engine,
       maxSizeKb, maxSizePx, getJapaneseChars
     }));
   }

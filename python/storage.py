@@ -2,6 +2,7 @@ from azure.storage.blob import BlobServiceClient
 import numpy as np
 import cv2
 import os
+import math
 
 
 def getContainer(params):
@@ -41,6 +42,20 @@ def downloadAsCv2(params):
             img = cv2.resize(
                 img, (0, 0), fx=coef, fy=coef, interpolation=cv2.INTER_AREA)
         cv2.imwrite(params['imgPath'], img)
+    
+    # rotate -60 degrees
+    img = cv2.imread(params['imgPath'])
+    (h, w) = img.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, -60, 1.0)
+    rotated_img = cv2.warpAffine(img, M, (w, h))
+    output_path = 'storage/img' + params['imgIndex'] + '_r-60.jpg'
+    widthStart = math.floor(rotated_img.shape[1] * 0.15)
+    widthEnd = math.floor(rotated_img.shape[1] * (1 - (0.15)))
+    hightStart = math.floor(rotated_img.shape[0] * 0.15)
+    hightEnd = math.floor(rotated_img.shape[0] * (1 - (0.15)))
+    rotated_img = rotated_img[hightStart:hightEnd, widthStart:widthEnd]
+    cv2.imwrite(output_path, rotated_img)
 
     fileSize = os.path.getsize(params['imgPath'])
     params['rootFolder'] = os.getcwd()

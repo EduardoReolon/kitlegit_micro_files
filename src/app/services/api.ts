@@ -79,7 +79,7 @@ export default class Api {
                         new Log({route: 'Returning from OCR space'}).setResponse({response: JSON.stringify(result)}).save();
                         resolve('');
                     } catch (error) {
-                        new Log({route: 'Try catch return from OCR space'}).setSideData({body: responseData}).setError(error as Error).save();
+                        new Log({route: 'Try catch return from OCR space'}).setSideData({body: responseData, status: res.statusCode || 'undefined'}).setError(error as Error).save();
                         resolve('');
                     }
                 });
