@@ -51,9 +51,9 @@ def downloadAsCv2(params):
     rotated_img = cv2.warpAffine(img, M, (w, h))
     output_path = 'storage/img' + params['imgIndex'] + '_r-60.jpg'
     widthStart = math.floor(rotated_img.shape[1] * 0.15)
-    widthEnd = math.floor(rotated_img.shape[1] * (1 - (0.15)))
+    widthEnd = math.floor(rotated_img.shape[1] * 0.85)
     hightStart = math.floor(rotated_img.shape[0] * 0.15)
-    hightEnd = math.floor(rotated_img.shape[0] * (1 - (0.15)))
+    hightEnd = math.floor(rotated_img.shape[0] * 0.85)
     rotated_img = rotated_img[hightStart:hightEnd, widthStart:widthEnd]
     cv2.imwrite(output_path, rotated_img)
 
