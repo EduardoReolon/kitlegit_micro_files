@@ -29,7 +29,6 @@ def dataExtraction(params):
     img = downloadAsCv2(params)
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     params['laplacian'] = cv2.Laplacian(gray_image, cv2.CV_64F).var()
-
     if (('hasQrcode' in params and params['hasQrcode'] == 'true') or ('hasBarcode' in params and params['hasBarcode'] == 'true')):
         barqrcodes = barqrcode.decodeImg(img, params)
     else:

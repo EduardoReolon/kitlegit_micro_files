@@ -37,6 +37,7 @@ if ('connectionMethod' not in params or params['connectionMethod'] == 'socket'):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:5555")
+    print('running in port 5555')
 
     while True:
         try:

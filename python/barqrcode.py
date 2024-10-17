@@ -97,7 +97,7 @@ def decodeImg(img, params):
             if code['type'] == 'qr':
                 qrcodeFound = True
         if qrcodeFound == False:
-            size = 2000
+            size = 5000
             if ('sizeQrcode' in params):
                 size = int(params['sizeQrcode'])
             resizeAndGetCodes(size)

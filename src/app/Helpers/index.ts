@@ -263,13 +263,17 @@ export default class Helpers {
         dataReturn.laplacian = obj.params.laplacian;
 
         if (engine && engine !== 'local') {
-          const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`, getJapaneseChars})
-          obj.facts = returnAPI.facts;
-          obj.factsJa = returnAPI.factsJa;
-          for (const angle of angles || []) {
-            const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath.replace(/.jpg$/, `_r${angle}.jpg`)}`, getJapaneseChars})
-            obj.facts.push(...returnAPI.facts);
-            obj.factsJa.push(...returnAPI.factsJa);
+          try {
+            const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath}`, getJapaneseChars})
+            obj.facts = returnAPI.facts;
+            obj.factsJa = returnAPI.factsJa;
+            for (const angle of angles || []) {
+              const returnAPI = await Api.factFromAPI({engine, absPath: `${obj.params.rootFolder}/${obj.params.imgPath.replace(/.jpg$/, `_r${angle}.jpg`)}`, getJapaneseChars})
+              obj.facts.push(...returnAPI.facts);
+              obj.factsJa.push(...returnAPI.factsJa);
+            }
+          } catch (error) {
+            new Log({route: 'ocr local error'}).setError(error as Error).save();
           }
         }
 
@@ -284,11 +288,12 @@ export default class Helpers {
         for (const fact of obj.facts) {
           if (fact.length) dataReturn.facts.push(fact.replace(/\n/g, ' '));
         }
-        for (const factJa of obj.factsJa) {
+        for (const factJa of obj.factsJa || []) {
           if (factJa.length) dataReturn.factsJa.push(factJa.replace(/\n/g, ' '));
         }
       }
     } catch (error) {
+console.log(error)
       new Log({route: 'getDataFromPhoto tryCatch'}).setError(error as Error).save();
     }
 
