@@ -1,7 +1,9 @@
 import Helpers from "../Helpers";
+import fs from 'fs';
+import path from 'path';
 
 export default class Watermark {
-  static async addWatermark({relPath, watermarkRelPath, check_status, product_id,
+  static async addWatermarkOld({relPath, watermarkRelPath, check_status, product_id,
     relPathTo, sizeQRCode = 128, padding = 30, brandTeamYear, dateUser}: {
     relPath: string,
     watermarkRelPath: string,
@@ -158,5 +160,78 @@ export default class Watermark {
     } catch (err) {
       throw err;
     }
+  }
+
+  static async addWatermark({
+    product_id,
+    relPathTo,
+    relPath,
+    check_status,
+    qrCodeRelPath,
+    branded,
+    test = false
+  }: {
+    product_id?: number,
+    check_status: number,
+    relPathTo?: string,
+    relPath: string,
+    branded: boolean,
+    qrCodeRelPath: string
+    test?: boolean
+  }) {
+    const main = await Helpers.readImgSharp({relPath});
+    const metaMain = await main.metadata();
+    
+    const sizeQRCode = Math.floor((branded ? 188 : 85) / 1500 * (metaMain.width || 1920));
+    const padding = Math.floor((branded ? 95 : 85) / 1500 * (metaMain.width || 1920));
+    
+    const {data: qrCode, info} = await (await Helpers.readImgSharp({relPath: qrCodeRelPath}))
+      .resize(sizeQRCode)
+      .trim() // remove a borda branca automaticamente (por padrão, trim identifica pixels brancos puros: #FFFFFF)
+      .toBuffer({resolveWithObject: true});
+
+    const fontSize = Math.floor(((branded ? 20 : 32) / 128) * sizeQRCode);
+    const compositeExtras: {input: Buffer, left: number, top: number}[] = [];
+
+    let fileBack: string = '';
+    if (check_status >= 15) fileBack = 'AUTH';
+    else fileBack = 'FAKE';
+    if (branded) fileBack += '_primary';
+    else fileBack += '_secondary';
+
+    const bufferBack = fs.readFileSync(Helpers.appRoot(path.join('src', 'app', 'assets', `${fileBack}.svg`)));
+    const {data: sharpGradient} = await Helpers.sharpFromBuffer(bufferBack ? bufferBack : Buffer.alloc(0))
+      .resize(metaMain.width, metaMain.height)
+      .toBuffer({resolveWithObject: true});
+    compositeExtras.push({input: sharpGradient, left: 0, top: 0});
+    
+    // Poppins Semibold Italic is not a standard SVG/web-safe font.
+    // To use it, you must embed the font as a base64-encoded font-face in the SVG.
+    // Here, we use a similar fallback: 'Arial Italic', but for true Poppins you must embed the font file.
+    // Example with fallback:
+    const textSVG = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${sizeQRCode * 3}" height="${fontSize * 2}">
+        <text x="0" y="${fontSize * 1.2}" fill="white" dominant-baseline="middle" text-anchor="start"
+      style="font: italic ${fontSize}px Arial, Helvetica, sans-serif;">
+      ${product_id?.toString().padStart(6, '0')}
+        </text>
+      </svg>`);
+    // To use Poppins Semibold Italic, you need to embed the font as a <style> with @font-face and base64 font data.
+    const {data: textSharp, info: infoText} = await Helpers.sharpFromBuffer(textSVG)
+      .toBuffer({resolveWithObject: true});
+    const watermarkY = (metaMain.height || 1000) - (info.height / 2) - padding;
+    main.composite([
+      ...compositeExtras,
+      {
+        input: qrCode,
+        left: Math.round(padding * (branded ? 2.4 : 1)),
+        top: Math.floor(watermarkY - (info.height / 2))
+      }, {
+        input: textSharp,
+        left: Math.round(padding * (branded ? 5.45 : 2.90)),
+        top: Math.floor(watermarkY - (infoText.height) + Math.round(padding * (branded ? 0.85 : 0.74)))
+      },
+    ])
+
+    await Helpers.saveImgSharp({relPath: relPathTo || relPath, file: main});
   }
 }
